@@ -26,8 +26,8 @@ MOG2 = cv2.createBackgroundSubtractorMOG2()#
 KNN = cv2.createBackgroundSubtractorKNN()#
 
 #顔検出
-face_cascade = cv2.CascadeClassifier(['haarcascade_frontalface_default.xml'])
-eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+#eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 
 while(cap.isOpened()):
     ret, frame0 = cap.read()
