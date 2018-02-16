@@ -41,7 +41,7 @@ p.line(x,y2,legend="y2",line_color="red")
 p.circle(x,y2,legend="y2",fill_color="red",line_color="red",size=6)
 p.line(x,y3,legend="y3",line_color="orange",line_dash="4 4")
 
-#show(p)
+show(p)
 
 #%% テスト3
 from bokeh.plotting import figure, output_file, show
@@ -59,7 +59,7 @@ TOOLS="crosshair,pan,wheel_zoom,box_zoom,reset,box_select,lasso_select,hover"
 #プロット
 p = figure(tools=TOOLS, x_range=(0,100), y_range=(0,100))
 p.circle(x,y, radius=radii, fill_color=colors, fill_alpha=0.6, line_color=None)
-#show(p)
+show(p)
 
 #%%　テスト4
 import bokeh
