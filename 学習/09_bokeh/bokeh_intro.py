@@ -41,7 +41,10 @@ p.line(x,y2,legend="y2",line_color="red")
 p.circle(x,y2,legend="y2",fill_color="red",line_color="red",size=6)
 p.line(x,y3,legend="y3",line_color="orange",line_dash="4 4")
 
-#show(p)
+p.legend.click_policy="mute"
+
+
+show(p)
 
 #%% テスト3
 from bokeh.plotting import figure, output_file, show
@@ -85,5 +88,5 @@ s3.square(x, y2, size=10, color="olive", alpha=0.5)
 
 p = gridplot([[s1], [s2], [s3]], toolbar_location=None)
 
-show(p)
+#show(p)
 
