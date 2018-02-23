@@ -12,10 +12,20 @@ import numpy as np
 from bokeh.plotting import figure, output_file, show
 x = np.linspace(0,100,1001)
 y = np.sin(x/3)
-output_file("line.html")
-p = figure(title="line",x_axis_label="x",y_axis_label="y")
+#output_file("line.html")
+tools="box_select, box_zoom, lasso_select,\
+       pan, xpan, ypan,\
+       poly_select, tap,\
+       wheel_zoom, xwheel_zoom, ywheel_zoom,\
+       xwheel_pan, ywheel_pan,\
+       undo, redo,reset,save,\
+       zoom_in, xzoom_in, yzoom_in,\
+       zoom_out, xzoom_out, yzoom_out,\
+       crosshair, hover"
+p = figure(title="line",x_axis_label="x",y_axis_label="y",tools=tools)
+#p.sizing_mode = "scale_width"
 p.line(x,y,legend="Temp",line_width=2)
-#show(p)
+show(p)
 
 #%% テスト2
 from bokeh.plotting import figure, output_file, show
@@ -24,7 +34,7 @@ y1 = np.sin(x/3)+1
 y2 = np.cos(x/4)+1
 y3 = np.cos(x/5)+1
 
-output_file("lines_log.html")
+#output_file("lines_log.html")
 
 p = figure(
         tools = "pan,box_zoom,reset,save,hover",
@@ -41,7 +51,7 @@ p.line(x,y2,legend="y2",line_color="red")
 p.circle(x,y2,legend="y2",fill_color="red",line_color="red",size=6)
 p.line(x,y3,legend="y3",line_color="orange",line_dash="4 4")
 
-show(p)
+#show(p)
 
 #%% テスト3
 from bokeh.plotting import figure, output_file, show
@@ -54,12 +64,12 @@ colors = [
 ]
 
 #出力物の設定
-output_file("scatter.html")
+#output_file("scatter.html")
 TOOLS="crosshair,pan,wheel_zoom,box_zoom,reset,box_select,lasso_select,hover"
 #プロット
 p = figure(tools=TOOLS, x_range=(0,100), y_range=(0,100))
 p.circle(x,y, radius=radii, fill_color=colors, fill_alpha=0.6, line_color=None)
-show(p)
+#show(p)
 
 #%%　テスト4
 import bokeh
@@ -71,7 +81,7 @@ y0 = np.sin(x/3)+1
 y1 = np.cos(x/4)+1
 y2 = np.cos(x/5)+1
 #出力物の設定
-output_file("linked_panning.html")
+#output_file("linked_panning.html")
 
 #プロット
 s1 = figure(width=250, plot_height=250, title=None)
