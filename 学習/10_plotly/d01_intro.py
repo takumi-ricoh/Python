@@ -43,5 +43,5 @@ layout = go.Layout(
 
 #プロット
 fig = dict(data=data, layout=layout)
-offline.plot(fig, filename="example")
+offline.plot(fig, filename="example.html")
 
