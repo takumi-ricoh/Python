@@ -28,4 +28,4 @@ def update(step):
 curdoc().add_root(p)
 show(p)
 # Add a periodic callback to be run every 500 milliseconds
-curdoc().add_periodic_callback(update, 10)
+curdoc().add_periodic_callback(update, 100)

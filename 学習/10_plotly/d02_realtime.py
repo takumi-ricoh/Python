@@ -4,6 +4,7 @@ Created on Mon Feb 19 11:27:43 2018
 
 @author: p000495138
 """
+import plotly.graph_objs as go
 import plotly.offline as pyo
 from plotly import tools
 import time

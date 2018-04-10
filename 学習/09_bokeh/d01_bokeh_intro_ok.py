@@ -12,7 +12,7 @@ import numpy as np
 from bokeh.plotting import figure, output_file, show
 x = np.linspace(0,100,1001)
 y = np.sin(x/3)
-#output_file("line.html")
+output_file("line.html")
 tools="box_select, box_zoom, lasso_select,\
        pan, xpan, ypan,\
        poly_select, tap,\

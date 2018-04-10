@@ -5,12 +5,10 @@ Created on Mon Feb 19 18:16:48 2018
 @author: p000495138
 """
 import holoviews as hv
-import numpy as np
+import holoviews.plotting.mpl
 
-hv.extension('bokeh')
+r = hv.Store.renderers['matplotlib'].instance(interactive=True)
 
-np.random.seed(111)
-x = np.linspace(-np.pi, np.pi, 100)
-
-hv.Curve((x, np.sin(x)))
+curve = hv.Curve(range(10))
+r.show(curve)
 

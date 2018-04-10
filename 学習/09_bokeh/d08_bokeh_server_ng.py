@@ -16,7 +16,7 @@ from bokeh.models import GlyphRenderer
 
 class LiveMonitor(object):
 
-    def __init__(self, server='chainer', url='http://localhost:5006/', **kwargs):
+    def __init__(self, server='chainer', url='http://localhost:5002/', **kwargs):
         # 出力先に IPython Notebook を指定
         #plotting.output_notebook()
         plotting.output_file("test.html")

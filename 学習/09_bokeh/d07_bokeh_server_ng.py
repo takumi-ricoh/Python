@@ -44,7 +44,7 @@ server = Server({'/': modify_doc}, num_procs=4)
 server.start()
 
 if __name__ == '__main__':
-    print('Opening Bokeh application on http://localhost:5006/')
+    print('Opening Bokeh application on http://localhost:5002/')
 
     server.io_loop.add_callback(server.show, "/")
     server.io_loop.start()
