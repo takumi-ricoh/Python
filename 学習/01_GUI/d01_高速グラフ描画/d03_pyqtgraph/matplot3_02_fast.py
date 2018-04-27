@@ -8,6 +8,7 @@ Created on Fri Jun  2 12:16:15 2017
 import sys
 import time
 from pyqtgraph.Qt import QtCore, QtGui
+from pyqtgraph.Qt import QtWidgets as wid
 import numpy as np
 import pyqtgraph as pg
 
@@ -72,12 +73,12 @@ class App(QtGui.QMainWindow):
         self.label.setText(tx)
         QtCore.QTimer.singleShot(1, self._update)
         self.counter += 1
-        time.sleep(0.1)
+        #time.sleep(0.001)
 
 if __name__ == '__main__':
-    app = QApplication.instance()
+    app = wid.QApplication.instance()
     if app is None:
-        app = QApplication([])
+        app = wid.QApplication([])
     else:
         print("App already running.")
     thisapp = App()
