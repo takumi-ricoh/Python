@@ -8,7 +8,7 @@ Created on Wed May 30 09:38:50 2018
 import matplotlib.pyplot as plt
 import random
 
-"方法1"
+#方法1
 x=[0]
 y=[0]
 for i in range(300-1):
@@ -17,21 +17,21 @@ for i in range(300-1):
     x.append(x[-1]+xrand-0.5)
     y.append(y[-1]+yrand-0.5)
 
-"方法2"
+#方法2
 x=[]
 y=[]
 x_new = 0
 y_new = 0
 for i in range(300):
     x.append(x_new)
-    y.append(y_new)    
-    
+    y.append(y_new)
+
     xrand = random.random()
     yrand = random.random()
 
     x_new = x_new + xrand - 0.5
     y_new = y_new + yrand - 0.5
-    
+
 
 plt.figure(1)
 plt.plot(x)
