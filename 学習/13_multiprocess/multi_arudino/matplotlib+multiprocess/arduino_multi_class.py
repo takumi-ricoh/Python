@@ -5,12 +5,18 @@ Created on Fri Jun 15 18:21:33 2018
 @author: p000495138
 """
 
+#別プロセスで
+#https://stackoverflow.com/questions/36181316/python-matplotlib-plotting-in-another-process
+
+#別プロセスでのプロットはうまくいかないのでやらない
+
 import serial
 import time
 import threading
 import matplotlib.pyplot as plt
-import multiprocessing
+import multiprocessing as mp
 import numpy as np
+import random
 
 #%% シリアルクラス
 class SerialThread():
@@ -25,7 +31,7 @@ class SerialThread():
         self.return_value = []
 
         #スレッドの作成と開始
-        self.thread = threading.Thread(target = self._target)
+        self.thread = threading.Thread(target = self._serial_worker)
         self.thread.start()
 
     def stop(self):
@@ -37,7 +43,7 @@ class SerialThread():
     def get_value(self):
         return self.return_value
 
-    def _target(self):
+    def _serial_worker(self):
         #stop_event がセットされるまでは、、」
         while not self.stop_event.is_set():
             line = self.ser.readline().decode("utf-8").strip()
@@ -59,52 +65,53 @@ class SerialThread():
 class PlotProcess():
     def __init__(self):
         #停止用の初期化
-        self.stop_event = multiprocessing.Event() #停止させるかのフラグ        
-        #グラフの初期化初期化
-        #self._init_plot()
-        self.data2 = 0
+        self.stop_event = mp.Event() #停止させるかのフラグ        
         #データl更新プロセスの作成と初期化
-        self.process = multiprocessing.Process(target = self._target, )
+        self.queue = mp.Queue()
+        self.process = mp.Process(target = self._plot_worker, args=(self.queue,))
         self.process.start()
         
-
     def stop(self):
         self.stop_event.set()
         self.process.join()    #スレッドが停止するのを待つ
 
-    def set_value(self, data):
-        self.data = data
+    def set_data(self,data):
+        self.queue.put(data)
 
     def _init_plot(self):
-        #初期化
-        self.data = {"a":0,"b":0}
         #共通データ
-        self.fig, self.ax = plt.subplots(2,1)
-        self.line1, = self.ax[0].plot(np.zeros(1),"r.-")
-        self.line2, = self.ax[1].plot(np.zeros(1),"g.-")
-        self.fig.show()
-        self.fig.canvas.draw()
-#        self.bg0 = self.fig.canvas.copy_from_bbox(self.ax[0].bbox)
-#        self.bg1 = self.fig.canvas.copy_from_bbox(self.ax[1].bbox)
+        fig, ax = plt.subplots(2,1)
+        line1, = self.ax[0].plot(np.zeros(1),"r.-")
+        line2, = self.ax[1].plot(np.zeros(1),"g.-")
+        fig.show()
+        fig.canvas.draw()
+        bg0 = self.fig.canvas.copy_from_bbox(self.ax[0].bbox)
+        bg1 = self.fig.canvas.copy_from_bbox(self.ax[1].bbox)
+        fig.show()
+        
+        return {"fig":fig, "ax":ax, "line1":line1, "line2":line2, "bg0":bg0, "bg1":bg1}
 
-    def _target(self):
+    def _plot_worker(self,q):
+        plot = self._init_plot()
+        
         #stop_event がセットされるまでは、、」
         while not self.stop_event.is_set():
-            self.data2 = self.data *2
-#            print(self.data["a"])
-#            #データ更新
+            obj = q.get()
+            print(obj)
+            
+            #データ更新
 #            x=np.arange(0,len(self.plot_data))
-#            self.line1.set_data(x,self.data["a"])
-#            self.line2.set_data(x,self.data["b"])
-#            #おまじない           
-#            self.fig.canvas.restore_region(self.bg0)
-#            self.fig.canvas.restore_region(self.bg1)
-#            self.fig.canvas.draw()
-#            self.ax[0].draw_artist(self.line1)
-#            self.ax[1].draw_artist(self.line2)
-#            self.fig.canvas.update()
-#            self.fig.canvas.flush_events()    
-#            self.fig.tight_layout()      
+            self.line1.set_data(obj[0], obj[1])
+            self.line2.set_data(obj[0], obj[1])
+            #おまじない           
+            plot["fig"].canvas.restore_region(plot["bg0"])
+            plot["fig"].canvas.restore_region(plot["bg1"])
+            plot["fig"].canvas.draw()
+            plot["ax"][0].draw_artist(plot["line1"])
+            plot["ax"][1].draw_artist(plot["line2"])
+            plot["fig"].canvas.update()
+            plot["fig"].canvas.flush_events()    
+            plot["fig"].tight_layout()      
             time.sleep(.1)
 
 #%%メイン処理
@@ -114,8 +121,8 @@ if __name__ == "__main__":
     param1 = {"com":"COM13", "rate":9600}
     param2 = {"com":"COM5",  "rate":9600}
 
-    th1 = SerialThread(param1)
-    th2 = SerialThread(param2)
+    #th1 = SerialThread(param1)
+    #th2 = SerialThread(param2)
     
     #プロットプロセス実行
     pro1 = PlotProcess()
@@ -123,21 +130,21 @@ if __name__ == "__main__":
     #%%実行    
     start = time.time()
 
-    while True:
-        a=th1.get_value()
-        b=th2.get_value()
-        
-        #data = {"a":a, "b":b}
-        data=1
-        
-        if len(a)>0: 
-            pro1.set_value(data)
-            print(pro1.get_value())
+    count=0
     
-        if time.time()-start > 5:
-            th1.stop()
-            th2.stop()
+    while True:
+        #a=th1.get_value()
+        #b=th2.get_value()
+
+        count+=1               
+        if count < 100: 
+            pro1.set_data([random.random(), random.random()])
+    
+        elif time.time()-start > 5:
+            #th1.stop()
+            #th2.stop()
             pro1.stop()
             print("finish")
+            time.sleep(.1)
             break
-
+        time.sleep(.1)
