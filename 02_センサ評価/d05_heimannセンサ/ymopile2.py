@@ -19,31 +19,52 @@ def getkey(key):
 ESC = 0x1B          
 
 #%%パラメータ
-slog_param    = sensor_cfg_mdl.SensorConfig()
-mlog_param    = machine_cfg_mdl.MachineConfig()
-plotter_param = plotter_cfg_mdl.PlotterConfig()
+sensor_param     = sensor_cfg_mdl.set_cfg()
+
+machine_param    = machine_cfg_mdl.set_cfg()
+
+plotter_param    = plotter_cfg_mdl.set_cfg()
 
 #%%オブジェクト生成
-sensor  = sensor_mdl.Sensors(slog_param)
-machine = machine_mdl.Machine(mlog_param)
+
+sensor  = sensor_mdl.Sensors(sensor_param)
+
+machine = machine_mdl.Machine(machine_param)
+
 plotter = plot_mdl.Plotter(plotter_param)
+
 saver   = save_mdl.Saver()
-#%%プロット初期化
-plotter.init()
+
 
 #%%データ取得スタート
 sensor.start()
 machine.start()
 
+#%%グラフ初期化
+
+sensor_dict   = sensor.get_value()
+machine_dict  = machine.get_value()
+
+plotter.sensor.init_line(sensor_dict)
+plotter.machine.init_line(machine_dict)
+
 #%%繰り返し処理
 while True:
     #データ取得
-    sensor_tmp   = sensor.get_value()
-    machine_data = machine.get_value()
+    sensor_dict   = sensor.get_value()
+    machine_dict  = machine.get_value()
+
     #プロットの更新
-    plotter.sensor.update(sensor_tmp)
-    plotter.machine.update(sensor_tmp)
+    plotter.sensor.update(sensor_dict)
+    plotter.machine.update(machine_dict)
+    
+    #描画の更新
+    plotter.sensor.draw_update()
+    plotter.machine.draw_update()
     
     # ESCキーが押されたら終了
     if getkey(ESC):
        break
+
+#%%繰り返し処理
+

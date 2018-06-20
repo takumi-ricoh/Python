@@ -7,24 +7,21 @@ Created on Wed Jun 20 15:48:23 2018
 import threading
 from serial import Serial
 
-#%% シリアルクラス
+#%% スレッドクラス
 class SerialThread():
 
-    def __init__(self, param):
+    def __init__(self, ser):
         
         #停止用の初期化
         self.stop_event = threading.Event() #停止させるかのフラグ
-        #シリアル通信開始
-        self.port        = param["port"]
-        self.baudrate    = param["rate"]
-        self.t0          = param["t0"]
-        #self.ser = self._serial_init()
+        #停止時はシリアルポートを閉じる
+        self.ser = ser
         #保存用データの初期化
         self.return_value = []
 
     def start(self):
         #スレッドの作成と開始
-        self.thread = threading.Thread(target = self._worker, args=(self.t0,))
+        self.thread = threading.Thread(target = self._worker,)
         self.thread.start()
 
     def stop(self):
@@ -35,6 +32,13 @@ class SerialThread():
 
     def _worker(self, t0):
         None
+
+#%%シリアルポートクラス
+class SerialCom():
+    
+    def __init__(self,port,baudrate):
+        self.port       = port
+        self.baudrate   = baudrate 
     
     def _serial_init(self):
         self.com = Serial(
@@ -49,7 +53,7 @@ class SerialThread():
         writeTimeout=None,
         dsrdtr=None)         
 
-    def _serial_read(self, coding):
+    def serial_read(self, coding):
         data = self.com.readline()
         data = data.strip().decode(coding) #先頭/末を消す
         return data

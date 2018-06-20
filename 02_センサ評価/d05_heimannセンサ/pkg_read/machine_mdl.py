@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sep  8 12:52:27 2017
@@ -12,19 +13,26 @@ Created on Fri Sep  8 12:52:27 2017
 *****************
 
 """
-import thread_mdl
+from base_mdl import SerialThread, SerialCom
 import time
 import functions as f
 import pandas as pd
 
 #%% データの中身を判定してリスト保存
-class MachineLog(thread_mdl.SerialThread):
+class MachineLog(SerialThread):
 
     def __init__(self, param):
-        super().__init__(param)
+        self.port       = param["port"]
+        self.baudrate   = param["baudrate"]
+        self.samplerate = param["samplerate"]
+        self.t0         = param["t0"]
+        
+        self.ser        = SerialCom(self.port, self.baudrate)     
+        
+        super().__init__(self.ser)
+        
         self.f22 = {"Sen1":[],"Sen3":[],}
         self.f26 = {"Heater1":[],"Heater2":[],}
-        self.samplerate = param["samplerate"]
 
     def get_value(self):
         #f22
@@ -40,7 +48,7 @@ class MachineLog(thread_mdl.SerialThread):
     
     #オーバーライド
     def _worker(self):
-        self.data = self._serial_read("shift-jis").split(",")
+        self.data = self.ser.serial_read("shift-jis").split(",")
 
         #f22
         if   "f22" in self.data:

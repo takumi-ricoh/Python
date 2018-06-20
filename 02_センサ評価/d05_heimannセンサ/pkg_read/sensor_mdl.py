@@ -13,25 +13,32 @@ Created on Fri Sep  8 14:10:30 2017
 
 """
 
-import thread_mdl
+from base_mdl import SerialThread, SerialCom
 import numpy as np
 import time
 
 #%% センサ値のロギング
-class SensorLog(thread_mdl.SerialThread):
+class SensorLog(SerialThread):
     """
     引数：辞書
     [ポート番号,ボーレート,サンプリング周期]
     """
 
     def __init__(self, param):
-        super().__init__(param)
+        self.port       = param["port"]
+        self.baudrate   = param["baudrate"]
+        self.samplerate = param["samplerate"]
+        self.t0         = param["t0"]
+        
+        self.ser        = SerialCom(self.port, self.baudrate)       
+        
+        super().__init__(self.ser)
+
         self.time = []
         self.couple = []
         self.num_np = []
         self.obj_np = []
         self.amb_np = []
-        self.samplerate = param["samplerate"]
 
     def get_value(self):
         time_np   = np.array(self.time,dtype=np.float32)
@@ -43,7 +50,7 @@ class SensorLog(thread_mdl.SerialThread):
     
     #オーバーライド
     def _worker(self, t0):
-        self.data = self._serial_read("shift-jis").split(",")
+        self.data = self.ser.serial_read("shift-jis").split(",")
         
         time_now    = time.time() - t0
         couples_now = self.data[1:2]
