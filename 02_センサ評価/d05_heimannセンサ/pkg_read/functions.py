@@ -25,12 +25,12 @@ def f22(data):
     time_str = temp2[2].split(':')
     time = float(time_str[0])*60 + float(time_str[1]) #秒単位換算
     #数値に変換
-    TargetTemp = np.float64(temp3[1])
-    CurentTemp = np.float64(temp3[3])
+    Tar = np.float64(temp3[1])
+    Cur = np.float64(temp3[3])
     #センサ種類
-    Sensor = temp2[1]
+    Sen = temp2[1]
     #print(Sensor)
-    return [time,TargetTemp,CurentTemp,Sensor]
+    return [time,Tar,Cur,Sen]
 
 #%%　f26    
 def f26(data):

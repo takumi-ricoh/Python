@@ -5,7 +5,7 @@ Created on Wed Jun 20 22:45:23 2018
 @author: takumi
 """
 
-def set_cfg():
+def get_cfg():
     param = {
             "port":"COM1",
             "baudrate":9600,

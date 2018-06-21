@@ -1,4 +1,4 @@
-
+a=
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sep  8 12:52:27 2017
@@ -21,50 +21,51 @@ import pandas as pd
 #%% データの中身を判定してリスト保存
 class MachineLog(SerialThread):
 
-    def __init__(self, param):
+    def __init__(self, param, t0):
         self.port       = param["port"]
         self.baudrate   = param["baudrate"]
         self.samplerate = param["samplerate"]
-        self.t0         = param["t0"]
+        self.t0         = t0
         
         self.ser        = SerialCom(self.port, self.baudrate)     
         
         super().__init__(self.ser)
         
-        self.f22 = {"Sen1":[],"Sen3":[],}
-        self.f26 = {"Heater1":[],"Heater2":[],}
-
-    def get_value(self):
-        #f22
-        f22_pd = self.f22.copy()
-        f22_pd["Sen1"] = pd.DataFrame(self.f22["Sen1"],columns=["time","Tar","Cur","Sen"])
-        f22_pd["Sen2"] = pd.DataFrame(self.f22["Sen2"],columns=["time","Tar","Cur","Sen"])
-        #f26
-        f26_pd = self.f26.copy()
-        f26_pd["Heater1"] = pd.DataFrame(self.f26["Heater1"],columns=["time","MVn","FF_Duty","Max_Duty","Duty","Heater"])
-        f26_pd["Heater2"] = pd.DataFrame(self.f26["Heater2"],columns=["time","MVn","FF_Duty","Max_Duty","Duty","Heater"])
+        #初期化(データフレーム)
+        f22_init = pd.DataFrame([],columns=["sec","time","Tar","Cur","Sen"])
+        f26_init = pd.DataFrame([],columns=["sec","time","MVn","FF_Duty","Max_Duty","Duty","Heater"])
         
-        return {"f22":f22_pd,"f26":f26_pd}
+        self.f22 = {"Sen1":f22_init, "Sen3":f22_init}
+        self.f26 = {"Heater1":f26_init, "Heater2":f26_init}
+
+    def get_value(self):        
+        return {"f22":self.f22,"f26":self.f26}
     
     #オーバーライド
     def _worker(self):
         self.data = self.ser.serial_read("shift-jis").split(",")
 
+        #時刻
+        time_now    = [time.time() - self.t0]
+
         #f22
         if   "f22" in self.data:
             [sec,Tar,Cur,Sen] = f.f22(self.data)
+            f22_tmp = pd.Series(time_now + [sec,Tar,Cur,Sen])
+            
             if Sen == '[Sensor1]':
-                self.f22["Sen1"].append([sec,Tar,Cur,Sen])
+                self.f22["Sen1"].append(f22_tmp,ignore_index=True)
             elif Sen == '[Sensor3]':
-                self.f22["Sen3"].append([sec,Tar,Cur,Sen])
+                self.f22["Sen3"].append(f22_tmp,ignore_index=True)
         
         #f26
         elif "f26" in self.data:
             [sec,MVn,FF_Duty,Max_Duty,Duty,Heater] = f.f26(self.data)
+            f26_tmp = pd.Series(time_now + [sec,MVn,FF_Duty,Max_Duty,Duty,Heater])
             if   Heater == '[Heat1]':
-                    self.f26["Heater1"].append([sec,MVn,FF_Duty,Max_Duty,Duty,Heater])
+                    self.f26["Heater1"].append(f26_tmp,ignore_index=True)
             elif Heater == '[Heat2]':
-                    self.f26["Heater2"].append([sec,MVn,FF_Duty,Max_Duty,Duty,Heater])
+                    self.f26["Heater2"].append(f26_tmp,ignore_index=True)
 
 
         time.sleep(self.samplerate)

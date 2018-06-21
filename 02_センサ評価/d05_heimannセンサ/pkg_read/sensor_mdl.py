@@ -14,58 +14,54 @@ Created on Fri Sep  8 14:10:30 2017
 """
 
 from base_mdl import SerialThread, SerialCom
+import pandas as pd
 import numpy as np
+
 import time
 
 #%% センサ値のロギング
 class SensorLog(SerialThread):
-    """
-    引数：辞書
-    [ポート番号,ボーレート,サンプリング周期]
-    """
 
-    def __init__(self, param):
+    def __init__(self, param, senNum, t0):
+        #センサパラメータセット
         self.port       = param["port"]
         self.baudrate   = param["baudrate"]
         self.samplerate = param["samplerate"]
-        self.t0         = param["t0"]
-        
-        self.ser        = SerialCom(self.port, self.baudrate)       
+        self.senNum     = param["senNum"]         #センサ数
+        self.t0         = t0
+
+        self.ser        = SerialCom(self.port, self.baudrate) 
         
         super().__init__(self.ser)
 
-        self.time = []
-        self.couple = []
-        self.num_np = []
-        self.obj_np = []
-        self.amb_np = []
+        #データ格納用の空データフレームを準備
+        self.couple = pd.DataFrame([],columns=["sec","couple1","couple2"])
+        self.num    = pd.DataFrame([],columns=["sec"]+["num"+str(i) for i in range(self.senNum)])
+        self.obj    = pd.DataFrame([],columns=["sec"]+["obj"+str(i) for i in range(self.senNum)])
+        self.amb    = pd.DataFrame([],columns=["sec"]+["amb"+str(i) for i in range(self.senNum)])
 
     def get_value(self):
-        time_np   = np.array(self.time,dtype=np.float32)
-        couple_np = np.array(self.couple,dtype=np.float32).T
-        num_np    = np.array(self.num,dtype=np.float32).T
-        obj_np    = np.array(self.obj,dtype=np.float32).T
-        amb_np    = np.array(self.amb,dtype=np.float32).T
-        return {"time":time_np,"couple":couple_np,"num":num_np,"obj":obj_np,"amb":amb_np}
-    
+        return {"couple":self.couple,"num":self.num,"obj":self.obj,"amb":self.amb}
+        
     #オーバーライド
     def _worker(self, t0):
         self.data = self.ser.serial_read("shift-jis").split(",")
         
-        time_now    = time.time() - t0
-        couples_now = self.data[1:2]
-        nums_now    = []
-        objs_now    = []
-        ambs_now    = []
-        for i in self.data[1:-1]:
-            nums_now.append(i.split(":")[0])
-            objs_now.append(i.split(":")[1])
-            ambs_now.append(i.split(":")[2])    
-    
-        self.time.append(time_now)
-        self.couple.append(couples_now)
-        self.num.append(nums_now)
-        self.obj.append(objs_now)
-        self.amb.append(ambs_now)
+        #ある時刻でのデータ列取得(リスト)
+        time_now    = [time.time() - self.t0]
+        couples_now = time_now + self.data[1:2]
+        nums_now    = time_now + [i.split(":")[0] for i in self.data[3:]]
+        objs_now    = time_now + [i.split(":")[1] for i in self.data[3:]]
+        ambs_now    = time_now + [i.split(":")[2] for i in self.data[3:]]
+
+        #データフレームに追加
+        self.couple.append(pd.Series(couples_now),ignore_index=True)
+        self.num.append(pd.Series(nums_now),ignore_index=True)
+        self.obj.append(pd.Series(objs_now),ignore_index=True)
+        self.amb.append(pd.Series(ambs_now),ignore_index=True)
         
+        #センサ数取得
+        self.sensor_number = len(objs_now)
+        
+        #ワーカー
         time.sleep(self.samplerate)

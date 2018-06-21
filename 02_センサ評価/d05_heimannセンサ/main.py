@@ -1,75 +1,91 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Sep  8 17:30:19 2017
+Created on Tue Jun 19 17:48:26 2018
 
 @author: p000495138
 """
-
-import Sensor.MachineLog
-import Sensor.SensorLog
-import Sensor.Ploter
-import pandas as pd
-import numpy as np
 import ctypes
+import time
+import itertools
+from pkg_read import sensor_mdl
+from pkg_read import machine_mdl
+from pkg_read import plot_mdl
+from pkg_config import sensor_cfg_mdl 
+from pkg_config import machine_cfg_mdl
+from pkg_config import plotter_cfg_mdl
+from pkg_save import save_mdl
 
-#%%
-""" 初期化 """
-mlog    = Sensor.MachineLog.MachineLog()
-slog    = Sensor.SensorLog.SensorLog()
-ploter  = Sensor.Ploter.Ploter()
-ploter.init_ax0(2) #2本
-ploter.init_ax1(2) #2本
-
-mlog.set_ch("COM26")
-slog.set_ch("COM24")
-
-#キーボード待ち
+#%%キーボード待ち
 def getkey(key):
     return(bool(ctypes.windll.user32.GetAsyncKeyState(key)&0x8000))
-ESC = 0x1B      
+ESC = 0x1B          
 
+#%%パラメータ
+sensor_param     = sensor_cfg_mdl.get_cfg()
 
-#%%
-""" 実行 """ 
-for i in range(99999):
-    if getkey(ESC):     # ESCキーが押されたら終了
-       break    
+machine_param    = machine_cfg_mdl.get_cfg()
+
+plotter_param    = plotter_cfg_mdl.get_cfg()
+
+#%% 基準時刻を取得する
+t0 = time.time()
+
+#%%オブジェクト生成
+#サーモパイル
+sensor  = sensor_mdl.Sensors(sensor_param,t0)
+#マシンログ
+machine = machine_mdl.Machine(machine_param,t0)
+#プロット
+plotter = plot_mdl.Plotter(plotter_param)
+#セーブ用
+saver   = save_mdl.Saver()
+
+#%%データ取得スタート
+sensor.start()
+machine.start()
+
+#センサ数取得
+sensor_number = sensor.sensor_number
+
+#%%グラフ化するキー組み合わせ
+f22_key1 = ["f22"]
+f22_key2 = ["Sen1","Sen3"]
+f22_key3 = ["Tar","Cur"]
+f22_keys = list(itertools.product(f22_key1,f22_key2,f22_key3))
+f26_key1 = ["f26"]
+f26_key2 = ["Heater1"]
+f26_key3 = ["Duty"]
+f26_keys = list(itertools.product(f26_key1,f26_key2,f26_key3))
+machine_keys = f22_keys + f26_keys
+
+thermopile_key1 = ["obj"]
+thermopile_key2 = ["obj" + str(i) for i in range(sensor_number)]
+thermopile_keys = list(itertools.product(thermopile_key1,thermopile_key2))
+couple_key1     = ["obj"]
+couple_key2     = ["couple1","couple2"]
+couple_keys     = list(itertools.product(couple_key1,couple_key2))
+sensor_keys     = thermopile_keys + couple_keys
+
+plotter.sensor.init_line(sensor_keys)
+plotter.machine.init_line(machine_keys)
+
+#%%繰り返し処理
+while True:
+    #データ取得
+    sensor_data   = sensor.get_value()
+    machine_data  = machine.get_value()
+
+    #プロットの更新
+    plotter.sensor.update(sensor_data)
+    plotter.machine.update(machine_data)
     
-    mlog.update() #値の読み出し
-    slog.update() #値の読み出し
+    #描画の更新
+    plotter.sensor.draw_update()
+    plotter.machine.draw_update()
     
-    if i%20==0:
-        #データｆフレームとして読み出す
-        f22_sen1    = pd.DataFrame(mlog.f22["Sen1"],columns=["time","Tar","Cur","Sen"])
-        f22_sen3    = pd.DataFrame(mlog.f22["Sen3"],columns=["time","Tar","Cur","Sen"])
-        f26_heater1 = pd.DataFrame(mlog.f26["Heater1"],columns=["time","MVn","FF_Duty","Max_Duty","Duty","Heater"])
-        f26_heater2 = pd.DataFrame(mlog.f26["Heater2"],columns=["time","MVn","FF_Duty","Max_Duty","Duty","Heater"])
-    
-        #%% マシンログ時刻補正    
-        if len(f22_sen1)>0:
-            f22_t0 = f22_sen1["time"][0]
-            f22_sen1["time2"] = f22_sen1["time"] - f22_t0
-            f22_sen3["time2"] = f22_sen3["time"] - f22_t0
-        if len(f26_heater1)>0:
-            f26_t0 = f26_heater1["time"][0]
-            f26_heater1["time2"] = f26_heater1["time"] - f26_t0
-            f26_heater2["time2"] = f26_heater2["time"] - f26_t0    
-        sensor = pd.DataFrame(slog.sensor["Sen1"],columns=["millis","vobj","tobj","tamb"])
-        
-        #%% プロット
-#        if len(f22_sen1)>0:
-#            ploter.update(f22_sen1["time2"],f22_sen1["Cur"],0,0)
-#            ploter.update(f22_sen3["time2"],f22_sen3["Cur"],0,1)
-#            xmin = min(f22_sen1["time2"]) - 10
-#            xmax = max(f22_sen1["time2"]) + 10
-#            ymin = 0
-#            ymax = 200
-#            ploter.set_limit(xmin,xmax,ymin,ymax,0)
-#        if len(f26_heater1)>0:
-#            ploter.update(f26_heater1["time2"],f26_heater1["Duty"],1,0)
-#            ploter.update(f26_heater2["time2"],f26_heater2["Duty"],1,1)
-#            xmin = min(f26_heater1["time2"]) - 10
-#            xmax = max(f26_heater1["time2"]) + 10
-#            ymin = -10
-#            ymax = 120
-#            ploter.set_limit(xmin,xmax,ymin,ymax,1)
+    # ESCキーが押されたら終了
+    if getkey(ESC):
+       break
+
+#%%繰り返し処理
+
