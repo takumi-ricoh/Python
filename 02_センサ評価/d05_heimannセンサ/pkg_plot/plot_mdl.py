@@ -9,8 +9,7 @@ Created on Fri Sep  8 11:04:01 2017
 
 
 import matplotlib.pyplot as plt
-from plot_base_mdl import Time_Plot
-from plot_base_mdl import Dist_Plot
+from pkg_plot import plot_base_mdl as base_p
 
 #%%プロッタ
 class Plotter():
@@ -28,7 +27,7 @@ class Plotter():
         #self.dist    = DistPlots(self.fig, self.ax[1,1], self.pos)     
     
 #%%センサ時系列    
-class SensorPlots(Time_Plot):
+class SensorPlots(base_p.Time_Plot):
         
     def __init__(self, fig, ax,):
         self.fig    = fig
@@ -39,7 +38,7 @@ class SensorPlots(Time_Plot):
         
 
 #%%マシンログ時系列    
-class MachinePlots(Time_Plot):
+class MachinePlots(base_p.Time_Plot):
         
     def __init__(self, fig, ax,):
         self.fig    = fig
@@ -49,7 +48,7 @@ class MachinePlots(Time_Plot):
         super().__init__(self.fig, self.ax,)
         
 #%%センサ温度分布    
-class DistPlots(Dist_Plot):
+class DistPlots(base_p.Dist_Plot):
         
     def __init__(self, fig, ax, pos):
         self.fig    = fig
@@ -62,7 +61,7 @@ class DistPlots(Dist_Plot):
 
 #%%テスト用
 
-a=Plotter(plotter_param)
+#a=Plotter(plotter_param)
 
 #if __name__ == '__main__':
 #    plotter = Plotter

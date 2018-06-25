@@ -1,4 +1,3 @@
-a=
 # -*- coding: utf-8 -*-
 """
 Created on Fri Sep  8 12:52:27 2017
@@ -13,21 +12,21 @@ Created on Fri Sep  8 12:52:27 2017
 *****************
 
 """
-from base_mdl import SerialThread, SerialCom
+from pkg_read import base_mdl as base_r
+from pkg_read import functions as f
 import time
-import functions as f
 import pandas as pd
 
 #%% データの中身を判定してリスト保存
-class MachineLog(SerialThread):
-
+class MachineLog(base_r.SerialThread):
+    
     def __init__(self, param, t0):
         self.port       = param["port"]
         self.baudrate   = param["baudrate"]
         self.samplerate = param["samplerate"]
         self.t0         = t0
         
-        self.ser        = SerialCom(self.port, self.baudrate)     
+        self.ser        = base_r.SerialCom(self.port, self.baudrate)     
         
         super().__init__(self.ser)
         

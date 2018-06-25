@@ -9,7 +9,7 @@ import time
 import itertools
 from pkg_read import sensor_mdl
 from pkg_read import machine_mdl
-from pkg_read import plot_mdl
+from pkg_plot import plot_mdl
 from pkg_config import sensor_cfg_mdl 
 from pkg_config import machine_cfg_mdl
 from pkg_config import plotter_cfg_mdl
@@ -28,13 +28,14 @@ machine_param    = machine_cfg_mdl.get_cfg()
 plotter_param    = plotter_cfg_mdl.get_cfg()
 
 #%% 基準時刻を取得する
-t0 = time.time()
+t0 = int(time.time())
 
 #%%オブジェクト生成
 #サーモパイル
-sensor  = sensor_mdl.Sensors(sensor_param,t0)
+#sensor  = sensor_mdl.SensorLog(sensor_param,t0)
+sensor = sensor_mdl.SensorLog(sensor_param,t0)
 #マシンログ
-machine = machine_mdl.Machine(machine_param,t0)
+machine = machine_mdl.MachineLog(machine_param,t0)
 #プロット
 plotter = plot_mdl.Plotter(plotter_param)
 #セーブ用

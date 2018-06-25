@@ -13,24 +13,26 @@ Created on Fri Sep  8 14:10:30 2017
 
 """
 
-from base_mdl import SerialThread, SerialCom
+from pkg_read import base_mdl as base_r
 import pandas as pd
 import numpy as np
 
 import time
 
 #%% センサ値のロギング
-class SensorLog(SerialThread):
+class SensorLog(base_r.SerialThread):
 
-    def __init__(self, param, senNum, t0):
+    def __init__(self, param, t0):
         #センサパラメータセット
+        self.param      = param
         self.port       = param["port"]
         self.baudrate   = param["baudrate"]
         self.samplerate = param["samplerate"]
         self.senNum     = param["senNum"]         #センサ数
-        self.t0         = t0
+        self.senPos     = param["senPos"]
+        self.t0         = 1
 
-        self.ser        = SerialCom(self.port, self.baudrate) 
+        self.ser        = base_r.SerialCom(self.port, self.baudrate) 
         
         super().__init__(self.ser)
 
