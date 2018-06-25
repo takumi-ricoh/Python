@@ -9,3 +9,5 @@ Created on Fri Sep  8 11:04:01 2017
 import csv
 import numpy as np
 
+class Saver():
+    pass
