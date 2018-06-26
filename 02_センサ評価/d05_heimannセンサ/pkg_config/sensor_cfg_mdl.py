@@ -7,7 +7,7 @@ Created on Wed Jun 20 22:44:05 2018
 
 def get_cfg():
     param = {
-            "port":"COM1", 
+            "port":"COM13", 
             "baudrate":9600, 
             "samplerate":0.1, 
             "senNum":8, #センサ数

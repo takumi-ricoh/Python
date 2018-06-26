@@ -20,32 +20,35 @@ class Plotter():
     
         #グラフ生成
         self.fig, self.ax = plt.subplots(2,2)
+        
     
         #グラフ初期化
         self.sensor  = SensorPlots(self.fig, self.ax[0,0])
-        #self.machine = MachinePlots(self.fig, self.ax[0,1]) 
-        #self.dist    = DistPlots(self.fig, self.ax[1,1], self.pos)     
+        self.machine = MachinePlots(self.fig, self.ax[0,1]) 
+        self.dist    = DistPlots(self.fig, self.ax[1,0], self.pos)     
+    
+        self.fig.tight_layout()
     
 #%%センサ時系列    
 class SensorPlots(base_p.Time_Plot):
         
-    def __init__(self, fig, ax,):
-        self.fig    = fig
-        self.ax     = ax
-        self.ax.title = "sensor"
+    def __init__(self, fig, ax):
 
-        #super().__init__(self.fig, self.ax,)
-        
+        super().__init__(fig, ax)
+
+        self.ax.set_title("sensor")
+
 
 #%%マシンログ時系列    
 class MachinePlots(base_p.Time_Plot):
         
     def __init__(self, fig, ax,):
-        self.fig    = fig
-        self.ax     = ax
-        self.ax.title = "machinelog"
+        
+        super().__init__(fig, ax,)
+        
+        self.ax.set_title("machineLog")
 
-        super().__init__(self.fig, self.ax,)
+        
         
 #%%センサ温度分布    
 class DistPlots(base_p.Dist_Plot):
@@ -54,7 +57,7 @@ class DistPlots(base_p.Dist_Plot):
         self.fig    = fig
         self.ax     = ax
         self.pos    = pos
-        self.ax.title = "machinelog"
+        self.ax.set_title("DistPlot")
 
         super().__init__(self.fig, self.ax, self.pos)
         

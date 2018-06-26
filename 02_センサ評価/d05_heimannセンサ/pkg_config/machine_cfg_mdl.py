@@ -7,7 +7,7 @@ Created on Wed Jun 20 22:45:23 2018
 
 def get_cfg():
     param = {
-            "port":"COM1",
+            "port":"COM5",
             "baudrate":9600,
             "samplerate":0.1,}
     return param

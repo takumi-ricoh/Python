@@ -38,15 +38,17 @@ sensor = sensor_mdl.SensorLog(sensor_param,t0)
 machine = machine_mdl.MachineLog(machine_param,t0)
 #プロット
 plotter = plot_mdl.Plotter(plotter_param)
+
 #セーブ用
-saver   = save_mdl.Saver()
+#saver   = save_mdl.Saver()
 
 #%%データ取得スタート
 sensor.start()
 machine.start()
 
 #センサ数取得
-sensor_number = sensor.sensor_number
+sensor_number = sensor.senNum
+
 
 #%%グラフ化するキー組み合わせ
 f22_key1 = ["f22"]
@@ -59,34 +61,41 @@ f26_key3 = ["Duty"]
 f26_keys = list(itertools.product(f26_key1,f26_key2,f26_key3))
 machine_keys = f22_keys + f26_keys
 
-thermopile_key1 = ["obj"]
-thermopile_key2 = ["obj" + str(i) for i in range(sensor_number)]
-thermopile_keys = list(itertools.product(thermopile_key1,thermopile_key2))
-couple_key1     = ["obj"]
-couple_key2     = ["couple1","couple2"]
-couple_keys     = list(itertools.product(couple_key1,couple_key2))
+thermopile_key1 = ["sensor"]
+thermopile_key2 = ["obj"]
+thermopile_key3 = ["obj" + str(i) for i in range(sensor_number)]
+thermopile_keys = list(itertools.product(thermopile_key1,thermopile_key2,thermopile_key3))
+couple_key1     = ["sensor"]
+couple_key2     = ["obj"]
+couple_key3     = ["couple1","couple2"]
+couple_keys     = list(itertools.product(couple_key1,couple_key2,couple_key3))
 sensor_keys     = thermopile_keys + couple_keys
 
 plotter.sensor.init_line(sensor_keys)
 plotter.machine.init_line(machine_keys)
 
+
 #%%繰り返し処理
+
 while True:
     #データ取得
     sensor_data   = sensor.get_value()
-    machine_data  = machine.get_value()
+    #machine_data  = machine.get_value()
 
     #プロットの更新
     plotter.sensor.update(sensor_data)
-    plotter.machine.update(machine_data)
+    #plotter.machine.update(machine_data)
     
     #描画の更新
     plotter.sensor.draw_update()
-    plotter.machine.draw_update()
+    #plotter.machine.draw_update()
     
     # ESCキーが押されたら終了
     if getkey(ESC):
        break
+   
+    sensor.stop()
+    
+    time.sleep(.5)
 
 #%%繰り返し処理
-

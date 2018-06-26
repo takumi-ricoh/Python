@@ -12,7 +12,10 @@ import numpy as np
 class Time_Plot():
 
     def __init__(self, fig, ax):
-
+        
+        self.fig = fig
+        self.ax  = ax
+        
         #初期設定
         self.ax.set_xlabel("time")
         self.ax.set_ylabel("temperature")        
@@ -20,8 +23,8 @@ class Time_Plot():
         self.ax.set_ylim(0,300) 
       
         #グラフ初期化
-        self.fig.canvas.draw()
-        #self.bg = self.fig.canvas.copy_from_bbox(self.ax.bbox)
+        self.fig.canvas.draw() 
+        self.bg = self.fig.canvas.copy_from_bbox(self.ax.bbox)
     
     def init_line(self,keys):
         self.keys  = keys
@@ -32,12 +35,16 @@ class Time_Plot():
     def update(self,data):
         #キーの数だけアップデート           
         for idx,key in enumerate(self.keys):
-            sec = data[key[0]][key[1]]["sec"]
-            val = data[key[0]][key[1]][key[2]]
+            pass
+            #print(key)
+            #sec = data[key[0]][key[1]]["sec"]
+            #val = data[key[0]][key[1]][key[2]]
             
-            line = self.lines[idx]
-            line.set_data(sec, val)
-            self.ax.draw_artist(line)
+            #line = self.lines[idx]
+            #line.set_data(sec, val)
+            #self.ax.draw_artist(line)
+
+        #print("line_updated")
 
     def draw_update(self):
         #ライン更新
@@ -46,6 +53,8 @@ class Time_Plot():
         #画面の更新
         self.fig.canvas.update()
         self.fig.canvas.flush_events()
+        
+        print("draw_updated")
 
 
 #%%時系列グラフの親クラス
@@ -53,6 +62,9 @@ class Dist_Plot():
 
     def __init__(self, fig, ax, pos):
 
+        self.fig = fig
+        self.ax  = ax        
+        
         #初期設定
         self.ax.set_xlabel("pos[mm]")
         self.ax.set_ylabel("temperature")        
@@ -60,7 +72,7 @@ class Dist_Plot():
         self.ax.set_ylim(0,300) 
       
         #グラフ初期化
-        self.fig.canvas.draw()
+        #self.fig.canvas.draw()
         self.bg = self.fig.canvas.copy_from_bbox(self.ax.bbox)
         
         #ポジション

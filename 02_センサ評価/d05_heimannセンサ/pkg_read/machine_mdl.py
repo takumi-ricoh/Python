@@ -16,6 +16,7 @@ from pkg_read import base_mdl as base_r
 from pkg_read import functions as f
 import time
 import pandas as pd
+import threading
 
 #%% データの中身を判定してリスト保存
 class MachineLog(base_r.SerialThread):
@@ -36,6 +37,12 @@ class MachineLog(base_r.SerialThread):
         
         self.f22 = {"Sen1":f22_init, "Sen3":f22_init}
         self.f26 = {"Heater1":f26_init, "Heater2":f26_init}
+
+    def start(self):
+        #スレッドの作成と開始
+        self.thread = threading.Thread(target = self._worker,)
+        self.thread.start()
+        print("started")
 
     def get_value(self):        
         return {"f22":self.f22,"f26":self.f26}

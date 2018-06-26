@@ -19,31 +19,33 @@ class SerialThread():
         #保存用データの初期化
         self.return_value = []
 
-    def start(self):
-        #スレッドの作成と開始
-        self.thread = threading.Thread(target = self._worker,)
-        self.thread.start()
+#    def start(self):
+#        #スレッドの作成と開始
+#        self.thread = threading.Thread(target = self._worker,)
+#        self.thread.start()
+#        print("started")
 
     def stop(self):
         """スレッドを停止させる"""
         self.stop_event.set()
         self.thread.join()    #スレッドが停止するのを待つ
-        self.ser.close()      #終わったら通信をきる
+        self.ser.com.close()      #終わったら通信をきる
 
-    def _worker(self, t0):
-        None
+#    def _worker(self):
+#        None
 
 #%%シリアルポートクラス
 class SerialCom():
     
     def __init__(self,port,baudrate):
         self.port       = port
-        self.baudrate   = baudrate 
+        self.baudrate   = baudrate
+        self._serial_init(self.port,self.baudrate)
     
-    def _serial_init(self):
+    def _serial_init(self,port,baudrate):
         self.com = Serial(
-        port=self.port,
-        baudrate=self.baudrate,
+        port=port,
+        baudrate=baudrate,
         bytesize=8,
         parity='N',
         stopbits=1,
