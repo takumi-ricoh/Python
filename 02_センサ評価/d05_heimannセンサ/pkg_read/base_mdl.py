@@ -19,11 +19,11 @@ class SerialThread():
         #保存用データの初期化
         self.return_value = []
 
-#    def start(self):
-#        #スレッドの作成と開始
-#        self.thread = threading.Thread(target = self._worker,)
-#        self.thread.start()
-#        print("started")
+    def start(self):
+        #スレッドの作成と開始
+        self.thread = threading.Thread(target = self._worker,)
+        self.thread.start()
+        print("thread started")
 
     def stop(self):
         """スレッドを停止させる"""

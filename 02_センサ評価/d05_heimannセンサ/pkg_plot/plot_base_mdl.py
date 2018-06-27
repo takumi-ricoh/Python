@@ -28,22 +28,25 @@ class Time_Plot():
     
     def init_line(self,keys):
         self.keys  = keys
-        self.lines = []        
+        self.mylines = []        
         for i in self.keys:
-            self.lines.append(self.ax.plot(0,0,".-")[0])
+            self.mylines.append(self.ax.plot([1,2,3],[4,5,6],"-")[0])
 
     def update(self,data):
         #キーの数だけアップデート           
         for idx,key in enumerate(self.keys):
-            pass
-            #print(key)
-            #sec = data[key[0]][key[1]]["sec"]
-            #val = data[key[0]][key[1]][key[2]]
+            #print(data[key[0]][key[1]][key[2]])
+            self.sec = data[key[0]][key[1]]["sec"]
+            self.val = data[key[0]][key[1]][key[2]]
+#            
+            self.myline = self.mylines[idx]
+            self.myline.set_data(self.sec, self.val)
             
-            #line = self.lines[idx]
-            #line.set_data(sec, val)
-            #self.ax.draw_artist(line)
+            #self.ax.set_xlim(0,self.sec[-1]+1)
+            
+            self.ax.draw_artist(self.myline)
 
+        return self.sec, self.val
         #print("line_updated")
 
     def draw_update(self):
@@ -98,6 +101,7 @@ class Dist_Plot():
             
             line.set_data(self.pos, dist)
             self.ax.draw_artist(line)
+            
 
     def draw_update(self):
         #ライン更新

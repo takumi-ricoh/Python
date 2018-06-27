@@ -18,6 +18,7 @@ import pandas as pd
 import numpy as np
 import threading
 import time
+import itertools
 
 #%% センサ値のロギング
 class SensorLog(base_r.SerialThread):
@@ -30,7 +31,7 @@ class SensorLog(base_r.SerialThread):
         self.samplerate = param["samplerate"]
         self.senNum     = param["senNum"]         #センサ数
         self.senPos     = param["senPos"]
-        self.t0         = 1
+        self.t0         = t0
 
         self.ser        = base_r.SerialCom(self.port, self.baudrate) 
         
@@ -42,11 +43,6 @@ class SensorLog(base_r.SerialThread):
         self.obj    = pd.DataFrame([],columns=["sec"]+["obj"+str(i) for i in range(self.senNum)])
         self.amb    = pd.DataFrame([],columns=["sec"]+["amb"+str(i) for i in range(self.senNum)])
 
-    def start(self):
-        #スレッドの作成と開始
-        self.thread = threading.Thread(target = self._worker,)
-        self.thread.start()
-        #print("started")
 
     def get_value(self):
         return {"sensor":{"couple":self.couple,"num":self.num,"obj":self.obj,"amb":self.amb}}
@@ -58,21 +54,34 @@ class SensorLog(base_r.SerialThread):
         
         print("sensorworker start")
         
-        #ある時刻でのデータ列取得(リスト)
-        time_now    = [time.time() - self.t0]
-        couples_now = time_now + self.data[1:3]
-        nums_now    = time_now + [i.split(":")[0] for i in self.data[3:]]
-        objs_now    = time_now + [i.split(":")[1] for i in self.data[3:]]
-        ambs_now    = time_now + [i.split(":")[2] for i in self.data[3:]]
+        #インデックス用のカウンタ
+        it = itertools.count()
+        
+        while not self.stop_event.is_set():
+            #カウンタ
+            self.count  = next(it)
 
-        #データフレームに追加
-        self.couple = self.couple.append(pd.Series(couples_now),ignore_index=True)
-        self.num    = self.num.append(pd.Series(nums_now),ignore_index=True)
-        self.obj    = self.obj.append(pd.Series(objs_now),ignore_index=True)
-        self.amb    = self.amb.append(pd.Series(ambs_now),ignore_index=True)
+            print("sensor read")
+            
+            #ある時刻でのデータ列取得(リスト)
+            time_now    = [time.time() - self.t0]
+            couples_now = time_now + self.data[1:3]
+            nums_now    = time_now + [i.split(":")[0] for i in self.data[3:]]
+            objs_now    = time_now + [i.split(":")[1] for i in self.data[3:]]
+            ambs_now    = time_now + [i.split(":")[2] for i in self.data[3:]]
+    
+            #データフレームに追加
+            self.couple.loc[self.count] = np.array(couples_now,dtype=np.float32)
+            self.num.loc[self.count]    = np.array(nums_now,dtype=np.float32)
+            self.obj.loc[self.count]    = np.array(objs_now,dtype=np.float32)
+            self.amb.loc[self.count]    = np.array(ambs_now,dtype=np.float32)
+            
+            #センサ数取得
+            self.sensor_number = len(objs_now)
         
-        #センサ数取得
-        self.sensor_number = len(objs_now)
-        
-        #ワーカー
-        time.sleep(.1)
+            
+#            if self.count>5:
+#                break
+            
+            #ワーカー
+            time.sleep(.3)

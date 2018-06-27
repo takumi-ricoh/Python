@@ -37,6 +37,7 @@ class SensorPlots(base_p.Time_Plot):
         super().__init__(fig, ax)
 
         self.ax.set_title("sensor")
+        
 
 
 #%%マシンログ時系列    

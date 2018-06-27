@@ -28,7 +28,7 @@ machine_param    = machine_cfg_mdl.get_cfg()
 plotter_param    = plotter_cfg_mdl.get_cfg()
 
 #%% 基準時刻を取得する
-t0 = int(time.time())
+t0 = time.time()
 
 #%%オブジェクト生成
 #サーモパイル
@@ -66,7 +66,7 @@ thermopile_key2 = ["obj"]
 thermopile_key3 = ["obj" + str(i) for i in range(sensor_number)]
 thermopile_keys = list(itertools.product(thermopile_key1,thermopile_key2,thermopile_key3))
 couple_key1     = ["sensor"]
-couple_key2     = ["obj"]
+couple_key2     = ["couple"]
 couple_key3     = ["couple1","couple2"]
 couple_keys     = list(itertools.product(couple_key1,couple_key2,couple_key3))
 sensor_keys     = thermopile_keys + couple_keys
@@ -80,10 +80,10 @@ plotter.machine.init_line(machine_keys)
 while True:
     #データ取得
     sensor_data   = sensor.get_value()
-    #machine_data  = machine.get_value()
+    machine_data  = machine.get_value()
 
     #プロットの更新
-    plotter.sensor.update(sensor_data)
+    sec,val = plotter.sensor.update(sensor_data)
     #plotter.machine.update(machine_data)
     
     #描画の更新
@@ -91,11 +91,11 @@ while True:
     #plotter.machine.draw_update()
     
     # ESCキーが押されたら終了
-    if getkey(ESC):
-       break
-   
-    sensor.stop()
+    if getkey(ESC):   
+        sensor.stop()
+        machine.stop()
+        break
     
-    time.sleep(.5)
+    #time.sleep(.2)
 
 #%%繰り返し処理
