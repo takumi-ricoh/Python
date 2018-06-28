@@ -12,6 +12,7 @@ Created on Fri Sep  8 14:10:30 2017
 *****************
 
 """
+import random
 
 from pkg_read import base_mdl as base_r
 import pandas as pd
@@ -23,14 +24,13 @@ import itertools
 #%% センサ値のロギング
 class SensorLog(base_r.SerialThread):
 
-    def __init__(self, param, t0):
+    def __init__(self,cfg, t0):
         #センサパラメータセット
-        self.param      = param
-        self.port       = param["port"]
-        self.baudrate   = param["baudrate"]
-        self.samplerate = param["samplerate"]
-        self.senNum     = param["senNum"]         #センサ数
-        self.senPos     = param["senPos"]
+        self.port       = cfg.PORT
+        self.baudrate   = cfg.BAUDRATE
+        self.samplerate = cfg.SAMPLERATE
+        self.senNum     = cfg.SENNUM         #センサ数
+        self.senPos     = cfg.SENPOS
         self.t0         = t0
 
         self.ser        = base_r.SerialCom(self.port, self.baudrate) 
@@ -49,7 +49,7 @@ class SensorLog(base_r.SerialThread):
         
     #オーバーライド
     def _worker(self):
-        #self.data = self.ser.serial_read("shift-jis").split(",")
+        self.datasen = self.ser.serial_read("shift-jis").split(",")
         self.data = ["5","50","60","1:2:3","4:5:6","7:8:9","10:11:12","13:14:15","16:17:18","19:20:21","22:23:24"]
         
         print("sensorworker start")
@@ -60,28 +60,24 @@ class SensorLog(base_r.SerialThread):
         while not self.stop_event.is_set():
             #カウンタ
             self.count  = next(it)
-
-            print("sensor read")
             
             #ある時刻でのデータ列取得(リスト)
             time_now    = [time.time() - self.t0]
-            couples_now = time_now + self.data[1:3]
-            nums_now    = time_now + [i.split(":")[0] for i in self.data[3:]]
-            objs_now    = time_now + [i.split(":")[1] for i in self.data[3:]]
-            ambs_now    = time_now + [i.split(":")[2] for i in self.data[3:]]
+            couples_now = time_now + [float(self.data[1]), float(self.data[2])] 
+            nums_now    = time_now + [float(i.split(":")[0]) for i in self.data[3:]]
+            objs_now    = time_now + [float(i.split(":")[1]) for i in self.data[3:]]
+            ambs_now    = time_now + [float(i.split(":")[2]) for i in self.data[3:]]
+    
+            objs_now[2] = random.random()*150 + 150
     
             #データフレームに追加
-            self.couple.loc[self.count] = np.array(couples_now,dtype=np.float32)
-            self.num.loc[self.count]    = np.array(nums_now,dtype=np.float32)
-            self.obj.loc[self.count]    = np.array(objs_now,dtype=np.float32)
-            self.amb.loc[self.count]    = np.array(ambs_now,dtype=np.float32)
+            self.couple.loc[self.count] = couples_now
+            self.num.loc[self.count]    = nums_now
+            self.obj.loc[self.count]    = objs_now
+            self.amb.loc[self.count]    = ambs_now
             
             #センサ数取得
             self.sensor_number = len(objs_now)
-        
-            
-#            if self.count>5:
-#                break
-            
+                    
             #ワーカー
-            time.sleep(.3)
+            time.sleep(.1)

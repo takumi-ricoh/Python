@@ -13,21 +13,22 @@ from pkg_plot import plot_base_mdl as base_p
 
 #%%プロッタ
 class Plotter():
-    
-    def __init__(self, param):
-        self.pos = param["senPos"]
+    """
+    グラフを配置する
+    """
+    def __init__(self, cfg):
+        self.pos = cfg.SENPOS
         plt.close()
     
         #グラフ生成
-        self.fig, self.ax = plt.subplots(2,2)
+        self.fig, self.ax = plt.subplots(2,2, figsize=(13, 6))
         
-    
         #グラフ初期化
-        self.sensor  = SensorPlots(self.fig, self.ax[0,0])
+        self.sensor  = SensorPlots (self.fig, self.ax[0,0])
         self.machine = MachinePlots(self.fig, self.ax[0,1]) 
-        self.dist    = DistPlots(self.fig, self.ax[1,0], self.pos)     
+        self.dist    = DistPlots   (self.fig, self.ax[1,0])     
     
-        self.fig.tight_layout()
+        #self.fig.tight_layout()
     
 #%%センサ時系列    
 class SensorPlots(base_p.Time_Plot):
@@ -39,7 +40,6 @@ class SensorPlots(base_p.Time_Plot):
         self.ax.set_title("sensor")
         
 
-
 #%%マシンログ時系列    
 class MachinePlots(base_p.Time_Plot):
         
@@ -50,22 +50,13 @@ class MachinePlots(base_p.Time_Plot):
         self.ax.set_title("machineLog")
 
         
-        
 #%%センサ温度分布    
 class DistPlots(base_p.Dist_Plot):
         
-    def __init__(self, fig, ax, pos):
+    def __init__(self, fig, ax):
         self.fig    = fig
         self.ax     = ax
-        self.pos    = pos
         self.ax.set_title("DistPlot")
 
-        super().__init__(self.fig, self.ax, self.pos)
+        super().__init__(self.fig, self.ax)
         
-
-#%%テスト用
-
-#a=Plotter(plotter_param)
-
-#if __name__ == '__main__':
-#    plotter = Plotter

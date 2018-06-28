@@ -21,23 +21,22 @@ def getkey(key):
 ESC = 0x1B          
 
 #%%パラメータ
-sensor_param     = sensor_cfg_mdl.get_cfg()
+sensor_cfg     = sensor_cfg_mdl.Cfg()
 
-machine_param    = machine_cfg_mdl.get_cfg()
+machine_cfg    = machine_cfg_mdl.Cfg()
 
-plotter_param    = plotter_cfg_mdl.get_cfg()
+plotter_cfg    = plotter_cfg_mdl.Cfg(sensor_cfg)
 
 #%% 基準時刻を取得する
 t0 = time.time()
 
 #%%オブジェクト生成
 #サーモパイル
-#sensor  = sensor_mdl.SensorLog(sensor_param,t0)
-sensor = sensor_mdl.SensorLog(sensor_param,t0)
+sensor = sensor_mdl.SensorLog(sensor_cfg,t0)
 #マシンログ
-machine = machine_mdl.MachineLog(machine_param,t0)
+machine = machine_mdl.MachineLog(machine_cfg,t0)
 #プロット
-plotter = plot_mdl.Plotter(plotter_param)
+plotter = plot_mdl.Plotter(plotter_cfg)
 
 #セーブ用
 #saver   = save_mdl.Saver()
@@ -49,31 +48,17 @@ machine.start()
 #センサ数取得
 sensor_number = sensor.senNum
 
+#%%グラフの初期化
 
-#%%グラフ化するキー組み合わせ
-f22_key1 = ["f22"]
-f22_key2 = ["Sen1","Sen3"]
-f22_key3 = ["Tar","Cur"]
-f22_keys = list(itertools.product(f22_key1,f22_key2,f22_key3))
-f26_key1 = ["f26"]
-f26_key2 = ["Heater1"]
-f26_key3 = ["Duty"]
-f26_keys = list(itertools.product(f26_key1,f26_key2,f26_key3))
-machine_keys = f22_keys + f26_keys
+#描画条件指定
+machine_key = plotter_cfg.MACHINE_KEY
+sensor_key  = plotter_cfg.SENSOR_KEY
+dist_key  = plotter_cfg.DIST_KEY
 
-thermopile_key1 = ["sensor"]
-thermopile_key2 = ["obj"]
-thermopile_key3 = ["obj" + str(i) for i in range(sensor_number)]
-thermopile_keys = list(itertools.product(thermopile_key1,thermopile_key2,thermopile_key3))
-couple_key1     = ["sensor"]
-couple_key2     = ["couple"]
-couple_key3     = ["couple1","couple2"]
-couple_keys     = list(itertools.product(couple_key1,couple_key2,couple_key3))
-sensor_keys     = thermopile_keys + couple_keys
-
-plotter.sensor.init_line(sensor_keys)
-plotter.machine.init_line(machine_keys)
-
+#グラフの初期化
+plotter.sensor.init_line(sensor_key)
+plotter.machine.init_line(machine_key)
+plotter.dist.init_line(dist_key,plotter_cfg.SENPOS)
 
 #%%繰り返し処理
 
@@ -83,19 +68,13 @@ while True:
     machine_data  = machine.get_value()
 
     #プロットの更新
-    sec,val = plotter.sensor.update(sensor_data)
-    #plotter.machine.update(machine_data)
-    
-    #描画の更新
-    plotter.sensor.draw_update()
-    #plotter.machine.draw_update()
+    plotter.sensor.update(sensor_data)
+    plotter.dist.update(sensor_data)
     
     # ESCキーが押されたら終了
     if getkey(ESC):   
-        sensor.stop()
-        machine.stop()
         break
-    
-    #time.sleep(.2)
 
-#%%繰り返し処理
+#%%終了処理
+sensor.stop()
+machine.stop()

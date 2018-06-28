@@ -22,10 +22,10 @@ import itertools
 #%% データの中身を判定してリスト保存
 class MachineLog(base_r.SerialThread):
     
-    def __init__(self, param, t0):
-        self.port       = param["port"]
-        self.baudrate   = param["baudrate"]
-        self.samplerate = param["samplerate"]
+    def __init__(self, cfg, t0):
+        self.port       = cfg.PORT
+        self.baudrate   = cfg.BAUDRATE
+        self.samplerate = cfg.SAMPLERATE
         self.t0         = t0
         
         self.ser        = base_r.SerialCom(self.port, self.baudrate)     
@@ -56,9 +56,7 @@ class MachineLog(base_r.SerialThread):
             time_now    = [time.time() - self.t0]
             #カウンタ
             self.count       = next(it)
-            
-            print("machine read")
-            
+                        
             #f22
             if   "f22" in self.data:
                 [sec,Tar,Cur,Sen] = f.f22(self.data)
@@ -79,7 +77,5 @@ class MachineLog(base_r.SerialThread):
                 elif Heater == '[Heat2]':
                         self.f26["Heater2"].loc[self.count] = f26_tmp
 
-#            if self.count>5:
-#                break
     
             time.sleep(.3)

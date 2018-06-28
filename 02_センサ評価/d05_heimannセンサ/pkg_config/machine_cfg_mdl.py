@@ -5,10 +5,9 @@ Created on Wed Jun 20 22:45:23 2018
 @author: takumi
 """
 
-def get_cfg():
-    param = {
-            "port":"COM5",
-            "baudrate":9600,
-            "samplerate":0.1,}
-    return param
-    
+class Cfg():
+    def __init__(self):
+        self.PORT        = "COM5"
+        self.BAUDRATE    = 9600
+        self.SAMPLERATE  = 0.1
+        
