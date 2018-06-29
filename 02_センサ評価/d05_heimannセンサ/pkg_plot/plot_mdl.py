@@ -22,6 +22,7 @@ class Plotter():
     
         #グラフ生成
         self.fig, self.ax = plt.subplots(2,2, figsize=(13, 6))
+        self.fig.show()
         
         #グラフ初期化
         self.sensor  = SensorPlots (self.fig, self.ax[0,0])

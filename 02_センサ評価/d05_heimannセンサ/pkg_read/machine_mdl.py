@@ -45,7 +45,10 @@ class MachineLog(base_r.SerialThread):
     
     #オーバーライド
     def _worker(self):
-        self.data = self.ser.serial_read("shift-jis").split(",")
+        self.datasen = self.ser.serial_read("shift-jis")
+        self.data = "@f22@|[Sensor1]|061:59.550 |Tar=,150,Cur=,120,Sen=,100,Air=,000,"
+
+        #self.data = []
 
         #インデックス用のカウンタ
         it = itertools.count()
@@ -78,4 +81,4 @@ class MachineLog(base_r.SerialThread):
                         self.f26["Heater2"].loc[self.count] = f26_tmp
 
     
-            time.sleep(.3)
+            time.sleep(.05)

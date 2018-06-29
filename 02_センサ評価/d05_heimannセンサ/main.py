@@ -62,6 +62,7 @@ plotter.dist.init_line(dist_key,plotter_cfg.SENPOS)
 
 #%%繰り返し処理
 
+sta = time.time()
 while True:
     #データ取得
     sensor_data   = sensor.get_value()
@@ -69,8 +70,11 @@ while True:
 
     #プロットの更新
     plotter.sensor.update(sensor_data)
+    plotter.machine.update(machine_data)
     plotter.dist.update(sensor_data)
     
+    print(time.time()-sta)
+    sta = time.time()
     # ESCキーが押されたら終了
     if getkey(ESC):   
         break

@@ -24,6 +24,7 @@ class Time_Plot():
       
         #グラフ初期化
         self.fig.canvas.draw() 
+        #self.bg = self.fig.canvas.copy_from_bbox(self.ax.bbox)
         
     def init_line(self,keys):
         self.keys  = keys
@@ -41,6 +42,7 @@ class Time_Plot():
     def update(self,data):
         #キーの数だけアップデート           
         for idx,key in enumerate(self.keys):
+            
             #ここはselfを付ける必要がある。
             self.sec = data[key[0]][key[1]]["sec"]
             self.val = data[key[0]][key[1]][key[2]]
@@ -48,7 +50,11 @@ class Time_Plot():
             #ラインを更新
             self.myline = self.mylines[idx]
             self.myline.set_data(self.sec, self.val)
-               
+            
+            #高速化
+            #self.ax.draw_artist(self.ax.patch)
+            #self.ax.draw_artist(self.myline)
+            
         self._draw_update()
         
     def _draw_update(self):
@@ -57,7 +63,10 @@ class Time_Plot():
         self.ax.relim()
         self.ax.autoscale_view(scaley=False)
         
+        #self.fig.canvas.restore_region(self.bg)
+        
         #ライン更新
+        #self.fig.canvas.update()
         self.fig.canvas.draw()
                 
         #画面の更新
@@ -79,6 +88,7 @@ class Dist_Plot():
       
         #グラフ初期化
         self.fig.canvas.draw() 
+        #self.bg = self.fig.canvas.copy_from_bbox(self.ax.bbox)
 
     def init_line(self, keys, pos):
         """
@@ -90,20 +100,31 @@ class Dist_Plot():
         for key in self.keys:
             self.line =  self.ax.plot(self.pos, np.zeros_like(self.pos), ".-")[0]
             self.mylines.append(self.line)
+            
+        plt.show(block=False)
         
     def update(self,data):
         #キーの数だけアップデート           
         for idx,key in enumerate(self.keys):
-            #dataの最終行の温度分布
-            self.dist = data[key[0]][key[1]].loc[1]
-            #ラインを更新
-            self.lines[idx].set_data(self.pos, self.dist)
+            #空データのば愛、エラーになるので、例外にしておく
+            try:
+                #dataの最終行の温度分布
+                self.dist = data[key[0]][key[1]].iloc[-1][1:]
+                #ラインを更新
+                self.mylines[idx].set_data(self.pos,list(self.dist))
+                #高速化
+                #self.ax.draw_artist(self.ax.patch)
+                #self.ax.draw_artist(self.mylines[idx])
+            except:
+                pass
 
         self._draw_update()
             
-    def draw_update(self):
+    def _draw_update(self):
         
+        #self.fig.canvas.restore_region(self.bg)
         #ライン更新
+        #self.fig.canvas.update()
         self.fig.canvas.draw()
 
         #画面の更新

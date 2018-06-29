@@ -80,4 +80,4 @@ class SensorLog(base_r.SerialThread):
             self.sensor_number = len(objs_now)
                     
             #ワーカー
-            time.sleep(.1)
+            time.sleep(.05)
