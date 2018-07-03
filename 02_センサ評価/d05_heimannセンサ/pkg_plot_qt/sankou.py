@@ -28,8 +28,10 @@ class PlotWindow:
 
         self.win=pg.GraphicsWindow()
         self.win.setWindowTitle(u"リアルタイムプロット")
-        self.plt=self.win.addPlot() #プロットのビジュアル関係
+        self.plt=self.win.addPlot(0,1) #プロットのビジュアル関係
+        self.plt=self.win.addPlot(1,1) #プロットのビジュアル関係
         self.plt.setYRange(-1,1)    #y軸の上限、下限の設定
+        self.plt.setTitle("title")    #y軸の上限、下限の設定
         self.plt.showGrid(x=True,y=True)
         
         self.curves=[]
@@ -61,8 +63,9 @@ class PlotWindow:
     def update(self):
         #self.data=self.AudioInput()
         for curve in self.curves:
-            data = np.random.randn(100)
-            curve.setData(data)   #プロットデータを格納
+            datax = np.random.randn(100)
+            datay = np.random.randn(100)
+            curve.setData(datax,datay)   #プロットデータを格納
         self.dt   = time.time() - self.start
         self.start = time.time()
         self.fps  = 1/self.dt
