@@ -78,11 +78,13 @@ class PlotWindow:
 #        ret=np.frombuffer(ret, dtype="int16")/32768.0
 #        return ret
 
-plotwin=PlotWindow()
+#plotwin=PlotWindow()
 
-#if __name__=="__main__":
-#    plotwin=PlotWindow()
-#    if (sys.flags.interactive!=1) or not hasattr(QtCore, 'PYQT_VERSION'):
-#        QtGui.QApplication.instance().exec_()
+if __name__=="__main__":
+    plotwin=PlotWindow()
+
+    if (sys.flags.interactive!=1) or not hasattr(QtCore, 'PYQT_VERSION'):
+        QtGui.QApplication.instance().exec_()
+        
 
 

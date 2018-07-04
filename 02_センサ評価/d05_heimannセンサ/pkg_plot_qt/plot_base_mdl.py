@@ -30,10 +30,10 @@ class Time_Plot():
         self.keys  = keys
         self.mylines = []      
         for key in self.keys:
-            self.mylines.append(self.plt.plot(name=key))
+            self.mylines.append(self.plt.plot(name=key[2]))
 
         #凡例表示
-        self.plt.addLegend("abc")
+        self.plt.addLegend()
 
     def update(self):
         
