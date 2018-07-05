@@ -114,7 +114,7 @@ def main():
         countdown_widget.reset_count)
 
     button_box_widget.quit_button.clicked.connect(
-        app.quit)
+        app.close)#app.quit)
     
     app.exec_()
     
