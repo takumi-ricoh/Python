@@ -6,7 +6,7 @@ Created on Fri Sep  8 11:04:01 2017
 
 
 """
-
+from PyQt5 import QMainWindow, QGridLayout
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtGui
 from pkg_plot_qt import plot_base_mdl as base_p
@@ -16,12 +16,20 @@ class Plotter():
     """
     グラフを配置する
     """
-    def __init__(self, cfg):
-        self.pos = cfg.SENPOS
 
-        #ウィンドウっ生成    
-        self.win=pg.GraphicsWindow()
-    
+    def __init__(self, cfg):
+        self.pos = cfg.SENPOS        
+        
+
+    def InitUI(self):
+        
+        #ウィンドウ
+        self.win = QMainWindow()
+        self.plot  = pg.PlotWidget()
+        
+        #レイアウト
+        self.win.setCentoralWidget(self.plot)
+        
         #グラフ生成
         self.plt1=self.win.addPlot(0,0) #プロット配置
         self.plt2=self.win.addPlot(0,1) #プロット配置
