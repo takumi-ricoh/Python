@@ -44,15 +44,14 @@ if __name__ == '__main__':
     
     #%%オブジェクト生成
     #サーモパイル
-    #sensor = sensor_mdl.SensorLog(sensor_cfg,t0)
+    sensor = sensor_mdl.SensorLog(sensor_cfg,t0)
     #マシンログ
-    #machine = machine_mdl.MachineLog(machine_cfg,t0)
+    machine = machine_mdl.MachineLog(machine_cfg,t0)
     #プロット
     plotter = plot_mdl.Plotter(plotter_cfg)
 
     #セーブ用
-    #saver   = save_mdl.Saver()
-"""    
+    #saver   = save_mdl.Saver()    
     #%%データ取得スタート
     sensor.start()
     machine.start()
@@ -81,4 +80,3 @@ if __name__ == '__main__':
     if getkey(ESC):   
         sensor.stop() 
         machine.stop()
-"""
