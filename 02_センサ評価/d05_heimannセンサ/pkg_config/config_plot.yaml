@@ -1,0 +1,60 @@
+#plot1: 時系列  
+PLOT1:
+  title: サーモパイル検知温度
+  kind: timeseries
+  pos: [0,0]
+  key: 
+    [[sensor, couple,     obj, couple1],
+     [sensor, couple,     obj, couple2],
+     [sensor, thermopile, obj, obj1],
+     [sensor, thermopile, obj, obj2],
+     [sensor, thermopile, obj, obj3],]
+  lengend: 
+    [熱電対1, 熱電対1, センサ1, センサ2, センサ3] 
+  color:
+    [1,2,3]
+
+
+#plot2: 温度分布  
+PLOT2:
+  title: サーモパイル温度分布
+  kind: distribution
+  pos: [0,1]
+  key: #2段階まで指定する
+    [[sensor, couple,     obj],
+     [sensor, thermopile, obj]]
+  lengend: 
+    [熱電対, 対象温度] 
+  color:
+    [1,2,3]
+  
+
+#plot3: 中央ログ
+PLOT3:
+  title: 中央
+  plotkind: timeseries
+  pos: [1,0]
+  key: 
+    [[machine, f22, Sen1,    Tar],
+     [machine, f22, Sen1,    Cur],
+     [machine, f26, Heater1, Duty]]
+  lengend: 
+    [Tar, Cur, Duty] 
+  color:
+    [1,2,3]
+          
+          
+#plot4: 端部ログ
+PLOT4:
+  title: 端部
+  kine: timeseries
+  pos: [1,1]
+  key: 
+    [[machine, f22, Sen1,    Tar],
+     [machine, f22, Sen1,    Cur],
+     [machine, f26, Heater1, Duty]]
+  lengend: 
+    [Tar, Cur, Duty] 
+  color:
+    [1,2,3]
+    

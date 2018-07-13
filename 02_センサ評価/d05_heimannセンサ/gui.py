@@ -6,78 +6,76 @@ Created on Wed Jul 11 17:18:31 2018
 """
 from PyQt5 import QtWidgets as Qtw
 import pyqtgraph as pg
-#%% GUI
+
+    
+#%% GUI画面
 class GUI(Qtw.QMainWindow):
 
     def __init__(self):
 
         super().__init__()
 
-        self.InitUI()
+        self._set_layout()
 
-    def InitUI(self):
+    #%% アクションのセッティング
+    def set_action(self, adapter):
+        self.startButton.clicked.connect(adapter.start())
+        self.stopButton.clicked.connect(adapter.stop())
+
+    #%% レイアウト初期化
+    def _set_layout(self):
                
         #題名
         self.setWindowTitle('おれおれグラフ生成アプリケーション')
         #メニュー画面
-        self.set_menu()
+        self._set_menu()
         #ボタン
-        button_box = self.set_button()        
-        #ボタンアクションの設定
-        self.set_button_action()  
+        button_box = self._set_button()        
         #プロット流域の設定        
-        self.plotArea = self.set_plotArea()          
+        self.pltcanvas = self._set_plotArea()          
         #レイアウトの設定        
-        self.set_layout(button_box,self.plotArea)
+        self._set_layouts(button_box, self.pltcanvas)
         #ウィンドウの設定
-        self.set_window()
+        self._set_window()
 
     #%% ファイルメニュー
-    def set_menu(self):
+    def _set_menu(self):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('File')        
 
     #%% ボタンレイアウト
-    def set_button(self):
+    def _set_button(self):
 
         #ボタン(Hboxレイアウト)
-        self.okButton = Qtw.QPushButton("OK")
+        self.startButton = Qtw.QPushButton("OK")
         self.stopButton = Qtw.QPushButton("Stop")
         hbox = Qtw.QHBoxLayout()
-        hbox.addWidget(self.okButton)
+        hbox.addWidget(self.startButton)
         hbox.addWidget(self.stopButton)        
         
         return hbox
 
-    #%% ボタンアクション
-    def set_button_action(self):
-        self.stopButton.clicked.connect(None)
-
     #%% プロットレイアウト
-    def set_plotArea(self):
-        plotlayout  = pg.GraphicsLayoutWidget()        
-        return plotlayout
+    def _set_plotArea(self):
+        pltcanvas  = pg.GraphicsLayoutWidget()        
+        return pltcanvas
 
     #%% 全体レイアウト設定
-    def set_layut(self,hbox,plotlayout):
+    def _set_layouts(self,hbox,pltcanvas):
         #Vboxレイアウト
         vbox = Qtw.QVBoxLayout()
         vbox.addLayout(hbox)        
-        vbox.addWidget(self.plotlayout)
+        vbox.addWidget(pltcanvas)
 
         return vbox
 
     #%% ウィンドウセット
-    def set_window(self,vbox):
+    def _set_window(self,vbox):
         self.setLayout(vbox)
         self.show()
 
-#        #ウィジェット領域
-#        wid = Qtw.QWidget()
-#        #vboxをセット
-#        wid.setLayout(vbox)
+    #%% ウィンドウセット
+    def _set_window(self,vbox):
+        self.setLayout(vbox)
+        self.show()
 
-        #ウィンドウにセット
-#        self.setCentralWidget(wid)
-        
-        #ウィンドウ表示 

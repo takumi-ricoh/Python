@@ -9,43 +9,33 @@ import numpy as np
 #%%時系列グラフの親クラス
 class Time_Plot():
 
-    def __init__(self, plt):
+    def __init__(self, plt, pool):
         
-        self.plt = plt
-        
-        #初期設定
-        self.plt.setLabel("bottom",text="time")
-        self.plt.setLabel("left",text="temperature")        
-        self.plt.showGrid(x=True,y=True)
-        self.plt.setYRange(0,300) 
-        
-        self.d=[]
-      
-    def init_line(self,obj,keys):
-        
-        #データオブジェクトへのリンク
-        self.obj = obj
+        self.plt  = plt
+        self.pool = pool
+              
+    def get_value(self, pool):
+        value = pool.get_value()
+        return value
+    
+    def init_line(self,keys,legend):
         
         #初期グラフ生成
         self.keys  = keys
         self.mylines = []      
-        for key in self.keys:
-            self.mylines.append(self.plt.plot(name=key[2]))
-
-        #凡例表示
-        self.plt.addLegend()
+        for i,key in enumerate(self.keys):
+            self.mylines.append(self.plt.plot, sname=legend[i])
 
     def update(self):
         
-        data = self.obj.get_value()
+        data = self.get_value(self.pool)
         
         #キーの数だけアップデート           
         for idx,key in enumerate(self.keys):
             
             #ここはselfを付ける必要がある。
-            self.sec = data[key[0]][key[1]]["sec"]
-            self.val = data[key[0]][key[1]][key[2]]
-            #self.d.append(self.val)
+            self.sec = data[key[0]][key[1]][key[2]]["sec"]
+            self.val = data[key[0]][key[1]][key[2]][key[3]]
 
             #ラインを更新
             self.myline = self.mylines[idx]
@@ -54,7 +44,7 @@ class Time_Plot():
 #%%時系列グラフの親クラス
 class Dist_Plot():
 
-    def __init__(self, fig, ax):
+    def __init__(self, plt, pool):
 
         self.fig = fig
         self.ax  = ax        
@@ -70,9 +60,6 @@ class Dist_Plot():
         #self.bg = self.fig.canvas.copy_from_bbox(self.ax.bbox)
 
     def init_line(self, keys, pos):
-        """
-        ex) keys=["objs","ambs"]
-        """
         self.keys = keys
         self.pos  = pos
         self.mylines = []        
@@ -80,7 +67,7 @@ class Dist_Plot():
             self.line =  self.ax.plot(self.pos, np.zeros_like(self.pos), ".-")[0]
             self.mylines.append(self.line)
             
-        plt.show(block=False)
+        #plt.show(block=False)
         
     def update(self,data):
         #キーの数だけアップデート           

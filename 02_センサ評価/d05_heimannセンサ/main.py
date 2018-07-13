@@ -13,69 +13,83 @@ import time
 from pkg_read import sensor_mdl
 from pkg_read import machine_mdl
 from pkg_plot_qt import plot_mdl
-from pkg_config import sensor_cfg_mdl 
-from pkg_config import machine_cfg_mdl
-from pkg_config import plotter_cfg_mdl
+from pkg_config import get_cfg_mdl #グローバル変数
 from pkg_save import save_mdl
+import gui
 
 #%%キーボード待ち
 def getkey(key):
     return(bool(ctypes.windll.user32.GetAsyncKeyState(key)&0x8000))
 ESC = 0x1B          
 
-#%%スタート
-if __name__ == '__main__':
 
-    #%% GUI
+#%% 仲介クラス
+class GUI_Adapter():
+    def __init__(self, sensor, machine, plotter):
+        self.sensor = sensor
+        self.machine = machine
+
+    #スタート
+    def start(self):
+        self.sensor.start()
+        self.machine.start()
+        self.plotter.start()
+
+    #ストップ
+    def close(self):
+        #読み込みスレッド停止
+        self.sensor.stop()
+        self.machine.stop()
+        #プロット停止
+        self.plotter.stop()
+
+#%% データプールクラス
+class DataPool():
+    def __init__(self,sensor,machine):
+        self.sensor = sensor
+        self.machine = machine    
+        self.pool = {}
+
+    def get_value(self):
+        self.pool["sensor"]  = sensor.get_value()
+        self.pool["machine"] = machine.get_value()
+
+#%% メイン処理
+if __name__ == '__main__':
+    
+    # GUI
     #インスタンスが無い場合のみ新たに作成
     app = QApplication.instance()
     if app is None:
         app = QApplication(sys.argv)
-
-    #%%パラメータ
-    sensor_cfg     = sensor_cfg_mdl.Cfg()
     
-    machine_cfg    = machine_cfg_mdl.Cfg()
-    
-    plotter_cfg    = plotter_cfg_mdl.Cfg(sensor_cfg)
-    
-    #%% 基準時刻を取得する
+    # 基準時刻を取得する
     t0 = time.time()
+    #%% パラメータ取得
+    gui_conf, plot_conf, sen_conf, log_conf = get_cfg_mdl.read_config()
     
-    #%%オブジェクト生成
-    #サーモパイル
-    sensor = sensor_mdl.SensorLog(sensor_cfg,t0)
-    #マシンログ
-    machine = machine_mdl.MachineLog(machine_cfg,t0)
-    #プロット
-    plotter = plot_mdl.Plotter(plotter_cfg)
+    #%% オブジェクト生成    
+
+    #GUI
+    gui = gui.GUI()
+
+    #データソース
+    sensor = sensor_mdl.SensorLog(t0,sen_conf)
+    machine = machine_mdl.MachineLog(t0)
+    pool = DataPool(sensor,machine)    
+
+    #プロッタ 
+    #センサ、fuserのまぜこぜにも対応するため、poolという一つの辞書で管理する
+    plotter = plot_mdl.Plotter(gui.pltcanvas, pool)
+
+    #GUIのアクションを設定
+    #いろいろあるので、GUI_Adapterクラスにまとめる
+    adapter = GUI_Adapter(sensor, machine, plotter)
+    gui.set_action(adapter)
+
 
     #セーブ用
     #saver   = save_mdl.Saver()    
-    #%%データ取得スタート
-    sensor.start()
-    machine.start()
-    
-    #センサ数取得
-    sensor_number = sensor.senNum
-    
-    #%%グラフの初期化
-    
-    #描画条件指定
-    mac_plot_key    = plotter_cfg.MACHINE_KEY
-    sen_plot_key    = plotter_cfg.SENSOR_KEY
-    dist_plot_key   = plotter_cfg.DIST_KEY
-    
-    #グラフの初期化
-    plotter.sensor_plot.init_line(sensor,sen_plot_key)
-    plotter.machine_plot.init_line(machine,mac_plot_key)
-    #plotter.dist_plot.init_line(dist_plot_key,plotter_cfg.SENPOS)
-    
-    #%%グラフ表示
-    
-    #表示スタート
-    plotter.start()
-    
     #%%終了処理
     if getkey(ESC):   
         sensor.stop() 

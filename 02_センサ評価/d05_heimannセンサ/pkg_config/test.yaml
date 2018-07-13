@@ -1,9 +1,0 @@
-COM:
-    PORT : "COM13"
-    BAUDRATE : 9600
-    SAMPLERATE : 0.1
-
-SENSOR:
-    NUM : 8
-    POS : [-100, -80, -60, -10, 10, 60, 80,100]
-        

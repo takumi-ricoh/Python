@@ -6,8 +6,4 @@ COM:
 SENSOR:
     NUM : 8
     POS : [-100, -80, -60, -10, 10, 60, 80, 100]
-    KEY :
-      COUPLE : 
-        KEY1 : ["obj","amb"]
-        KEY2 : ["couple1","couple2"]
 

@@ -24,7 +24,7 @@ import itertools
 #%% センサ値のロギング
 class SensorLog(base_r.SerialThread):
 
-    def __init__(self,cfg, t0):
+    def __init__(self,t0,cfg):
         #センサパラメータセット
         self.port       = cfg.PORT
         self.baudrate   = cfg.BAUDRATE
@@ -45,7 +45,7 @@ class SensorLog(base_r.SerialThread):
 
 
     def get_value(self):
-        return {"sensor":{"couple":self.couple,"num":self.num,"obj":self.obj,"amb":self.amb}}
+        return {"couple":{"obj":self.couple}, "thermopile":{"num":self.num, "obj":self.obj, "amb":self.amb}}
         
     #オーバーライド
     def _worker(self):
