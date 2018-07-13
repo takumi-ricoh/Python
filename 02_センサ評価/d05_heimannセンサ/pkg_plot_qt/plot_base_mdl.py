@@ -24,7 +24,7 @@ class Time_Plot():
         self.keys  = keys
         self.mylines = []      
         for i,key in enumerate(self.keys):
-            self.mylines.append(self.plt.plot, sname=legend[i])
+            self.mylines.append(self.plt.plot(name=legend[i]))
 
     def update(self):
         
@@ -46,25 +46,15 @@ class Dist_Plot():
 
     def __init__(self, plt, pool):
 
-        self.fig = fig
-        self.ax  = ax        
-        
-        #初期設定
-        self.ax.set_xlabel("pos[mm]")
-        self.ax.set_ylabel("temperature")        
-        self.ax.grid(True)
-        self.ax.set_ylim(0,300) 
-      
-        #グラフ初期化
-        self.fig.canvas.draw() 
-        #self.bg = self.fig.canvas.copy_from_bbox(self.ax.bbox)
+        self.plt  = plt
+        self.pool = pool      
 
     def init_line(self, keys, pos):
         self.keys = keys
         self.pos  = pos
         self.mylines = []        
         for key in self.keys:
-            self.line =  self.ax.plot(self.pos, np.zeros_like(self.pos), ".-")[0]
+            self.line =  self.plt.plot(self.pos, np.zeros_like(self.pos), ".-")[0]
             self.mylines.append(self.line)
             
         #plt.show(block=False)

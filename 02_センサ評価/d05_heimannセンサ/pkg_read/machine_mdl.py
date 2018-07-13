@@ -12,23 +12,23 @@ Created on Fri Sep  8 12:52:27 2017
 *****************
 
 """
-from pkg_read import base_mdl as base_r
-from pkg_read import functions as f
+from . import base_mdl
+from . import functions as f
 import time
 import pandas as pd
 import threading
 import itertools
 
 #%% データの中身を判定してリスト保存
-class MachineLog(base_r.SerialThread):
+class MachineLog(base_mdl.SerialThread):
     
-    def __init__(self, cfg, t0):
-        self.port       = cfg.PORT
-        self.baudrate   = cfg.BAUDRATE
-        self.samplerate = cfg.SAMPLERATE
+    def __init__(self, t0, cfg):
+        self.port       = cfg["COM"]["PORT"]
+        self.baudrate   = cfg["COM"]["BAUDRATE"]
+        self.samplerate = cfg["COM"]["SAMPLERATE"]
         self.t0         = t0
         
-        self.ser        = base_r.SerialCom(self.port, self.baudrate)     
+        self.ser        = base_mdl.SerialCom(self.port, self.baudrate)     
         
         super().__init__(self.ser)
         

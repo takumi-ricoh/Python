@@ -7,14 +7,16 @@ Created on Fri Sep  8 11:04:01 2017
 
 """
 from pyqtgraph.Qt import QtCore, QtGui
-from pkg_plot_qt import plot_base_mdl as base_p
+from . import plot_base_mdl as base_p
 #%%プロッタ
 class Plotter():
 
-    def __init__(self, pltcanvas, pool, CFG):
+    def __init__(self, pltcanvas, pool, cfgs):
 
         self.canvas   = pltcanvas
-        self.datapool = pool
+        self.pool = pool
+        self.cfgs = cfgs
+        
         self.plots = {}
         self.InitPlot()
     
@@ -22,27 +24,28 @@ class Plotter():
     def InitPlot(self):
         
         #プロットアイテムの登録
-        for key,item in Plotter.CFG.items():
+        for key,cfg in self.cfgs.items():
             
             #レイアウト
-            row     = item['pos'][0]
-            column  = item['pos'][1]            
+            row     = cfg['pos'][0]
+            column  = cfg['pos'][1]            
             layout = self.canvas.addPlot(row,column)
+            
+            print(key)
 
             #プロットの種類を指定して、プロット生成
-            if item['kind'] == 'timeseries':
-                plt = TimePlots(layout, item, pool)
-            if item['kind'] == 'distribution':
-                plt = DistPlots(layout, item, pool)
+            if cfg['kind'] == 'timeseries':
+                plt = TimePlots(layout, cfg, self.pool)
+            if cfg['kind'] == 'distribution':
+                plt = DistPlots(layout, cfg, self.pool)
 
             #登録
             self.plots[key] = plt
             
-            
     #スタート
     def start(self):
         self.timer=QtCore.QTimer()
-        self.timer.timeout.connect(self.plots["PLOT"].update)
+        self.timer.timeout.connect(self.plots["PLOT1"].update)
         self.timer.start(10)    #10msごとにupdateを呼び出し
 
     #ストップ
@@ -71,9 +74,9 @@ class TimePlots(base_p.Time_Plot):
 #%%センサ温度分布    
 class DistPlots(base_p.Dist_Plot):
         
-    def __init__(self, plt):
+    def __init__(self, plt, cfg, pool):
 
-        super().__init__(plt)
+        super().__init__(plt, pool)
 
         self.plt.setTitle(cfg["title"])
        

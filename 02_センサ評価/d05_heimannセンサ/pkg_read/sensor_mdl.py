@@ -14,7 +14,7 @@ Created on Fri Sep  8 14:10:30 2017
 """
 import random
 
-from pkg_read import base_mdl as base_r
+from . import base_mdl
 import pandas as pd
 import numpy as np
 import threading
@@ -22,18 +22,18 @@ import time
 import itertools
 
 #%% センサ値のロギング
-class SensorLog(base_r.SerialThread):
+class SensorLog(base_mdl.SerialThread):
 
     def __init__(self,t0,cfg):
         #センサパラメータセット
-        self.port       = cfg.PORT
-        self.baudrate   = cfg.BAUDRATE
-        self.samplerate = cfg.SAMPLERATE
-        self.senNum     = cfg.SENNUM         #センサ数
-        self.senPos     = cfg.SENPOS
+        self.port       = cfg["COM"]["PORT"]
+        self.baudrate   = cfg["COM"]["BAUDRATE"]
+        self.samplerate = cfg["COM"]["SAMPLERATE"]
+        self.senNum     = cfg["SENSOR"]["NUM"]        #センサ数
+        self.senPos     = cfg["SENSOR"]["POS"]
         self.t0         = t0
 
-        self.ser        = base_r.SerialCom(self.port, self.baudrate) 
+        self.ser        = base_mdl.SerialCom(self.port, self.baudrate) 
         
         super().__init__(self.ser)
 

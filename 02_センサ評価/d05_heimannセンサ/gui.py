@@ -30,13 +30,15 @@ class GUI(Qtw.QMainWindow):
         #メニュー画面
         self._set_menu()
         #ボタン
-        button_box = self._set_button()        
+        self.hbox = self._set_button()      
+        self._set_window(self.hbox)
+        
         #プロット流域の設定        
         self.pltcanvas = self._set_plotArea()          
         #レイアウトの設定        
-        self._set_layouts(button_box, self.pltcanvas)
+        self.vbox = self._set_layouts(self.hbox, self.pltcanvas)
         #ウィンドウの設定
-        self._set_window()
+        self._set_window(self.vbox)
 
     #%% ファイルメニュー
     def _set_menu(self):
@@ -73,9 +75,3 @@ class GUI(Qtw.QMainWindow):
     def _set_window(self,vbox):
         self.setLayout(vbox)
         self.show()
-
-    #%% ウィンドウセット
-    def _set_window(self,vbox):
-        self.setLayout(vbox)
-        self.show()
-

@@ -28,6 +28,7 @@ class GUI_Adapter():
     def __init__(self, sensor, machine, plotter):
         self.sensor = sensor
         self.machine = machine
+        self.plotter = plotter
 
     #スタート
     def start(self):
@@ -74,17 +75,18 @@ if __name__ == '__main__':
     gui = gui.GUI()
 
     #データソース
-    sensor = sensor_mdl.SensorLog(t0,sen_conf)
-    machine = machine_mdl.MachineLog(t0)
-    pool = DataPool(sensor,machine)    
+    sensor = sensor_mdl.SensorLog(t0, sen_conf)
+    machine = machine_mdl.MachineLog(t0, log_conf)
+    pool = DataPool(sensor, machine)    
 
     #プロッタ 
     #センサ、fuserのまぜこぜにも対応するため、poolという一つの辞書で管理する
-    plotter = plot_mdl.Plotter(gui.pltcanvas, pool)
+    plotter = plot_mdl.Plotter(gui.pltcanvas, pool,  plot_conf)
 
     #GUIのアクションを設定
     #いろいろあるので、GUI_Adapterクラスにまとめる
     adapter = GUI_Adapter(sensor, machine, plotter)
+    print(type(adapter))
     gui.set_action(adapter)
 
 
