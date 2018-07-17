@@ -32,17 +32,21 @@ class GUI_Adapter():
 
     #スタート
     def start(self):
+        print("start clicked")
         self.sensor.start()
         self.machine.start()
         self.plotter.start()
+        print("start success")
 
     #ストップ
-    def close(self):
+    def stop(self):
+        print("stop clicked")
         #読み込みスレッド停止
         self.sensor.stop()
         self.machine.stop()
         #プロット停止
         self.plotter.stop()
+        print("stop success")
 
 #%% データプールクラス
 class DataPool():
@@ -54,6 +58,7 @@ class DataPool():
     def get_value(self):
         self.pool["sensor"]  = sensor.get_value()
         self.pool["machine"] = machine.get_value()
+        return pool
 
 #%% メイン処理
 if __name__ == '__main__':
@@ -89,10 +94,4 @@ if __name__ == '__main__':
     print(type(adapter))
     gui.set_action(adapter)
 
-
-    #セーブ用
-    #saver   = save_mdl.Saver()    
-    #%%終了処理
-    if getkey(ESC):   
-        sensor.stop() 
-        machine.stop()
+    sys.exit(app.exec_())

@@ -19,8 +19,10 @@ class GUI(Qtw.QMainWindow):
 
     #%% アクションのセッティング
     def set_action(self, adapter):
-        self.startButton.clicked.connect(adapter.start())
-        self.stopButton.clicked.connect(adapter.stop())
+        print(type(adapter))
+        dir(adapter)
+        self.startButton.clicked.connect(lambda: adapter.start())
+        self.stopButton.clicked.connect(lambda: adapter.stop())
 
     #%% レイアウト初期化
     def _set_layout(self):
@@ -28,17 +30,36 @@ class GUI(Qtw.QMainWindow):
         #題名
         self.setWindowTitle('おれおれグラフ生成アプリケーション')
         #メニュー画面
-        self._set_menu()
+        #self._set_menu()
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('File')     
+
         #ボタン
-        self.hbox = self._set_button()      
-        self._set_window(self.hbox)
+        #self.hbox = self._set_button()      
+        #self._set_window(self.hbox)
+        self.startButton = Qtw.QPushButton("Start")
+        self.stopButton = Qtw.QPushButton("Stop")
+        hbox = Qtw.QHBoxLayout()
+        hbox.addWidget(self.startButton)
+        hbox.addWidget(self.stopButton) 
+        
         
         #プロット流域の設定        
-        self.pltcanvas = self._set_plotArea()          
+        #self.pltcanvas = self._set_plotArea()          
+        self.pltcanvas  = pg.GraphicsLayoutWidget()       
+
         #レイアウトの設定        
-        self.vbox = self._set_layouts(self.hbox, self.pltcanvas)
+        #self.vbox = self._set_layouts(self.hbox, self.pltcanvas)
+        vbox = Qtw.QVBoxLayout()
+        vbox.addLayout(hbox)        
+        vbox.addWidget(self.pltcanvas)
+
         #ウィンドウの設定
-        self._set_window(self.vbox)
+        #self._set_window(self.vbox)
+        widget = Qtw.QWidget()
+        widget.setLayout(vbox)
+        self.setCentralWidget(widget)
+        self.show()
 
     #%% ファイルメニュー
     def _set_menu(self):
@@ -73,5 +94,8 @@ class GUI(Qtw.QMainWindow):
 
     #%% ウィンドウセット
     def _set_window(self,vbox):
-        self.setLayout(vbox)
+        widget = Qtw.QWidget()
+        widget.setLayout(vbox)
+        self.setCentralWidget(widget)
+        #self.setLayout(vbox)
         self.show()

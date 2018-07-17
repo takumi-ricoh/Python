@@ -14,8 +14,8 @@ class Time_Plot():
         self.plt  = plt
         self.pool = pool
               
-    def get_value(self, pool):
-        value = pool.get_value()
+    def get_value(self):
+        value = self.pool.get_value()
         return value
     
     def init_line(self,keys,legend):
@@ -27,8 +27,8 @@ class Time_Plot():
             self.mylines.append(self.plt.plot(name=legend[i]))
 
     def update(self):
-        
-        data = self.get_value(self.pool)
+        #print("start update")
+        data = self.get_value()
         
         #キーの数だけアップデート           
         for idx,key in enumerate(self.keys):
@@ -37,9 +37,12 @@ class Time_Plot():
             self.sec = data[key[0]][key[1]][key[2]]["sec"]
             self.val = data[key[0]][key[1]][key[2]][key[3]]
 
+            print(self.sec)
             #ラインを更新
             self.myline = self.mylines[idx]
             self.myline.setData(self.sec, self.val)
+            
+            print("lineupdate")
                                 
 #%%時系列グラフの親クラス
 class Dist_Plot():
