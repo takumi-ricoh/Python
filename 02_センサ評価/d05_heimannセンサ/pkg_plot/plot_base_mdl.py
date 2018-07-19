@@ -107,16 +107,10 @@ class Dist_Plot():
         #キーの数だけアップデート           
         for idx,key in enumerate(self.keys):
             #空データのば愛、エラーになるので、例外にしておく
-            try:
-                #dataの最終行の温度分布
-                self.dist = data[key[0]][key[1]].iloc[-1][1:]
-                #ラインを更新
-                self.mylines[idx].set_data(self.pos,list(self.dist))
-                #高速化
-                #self.ax.draw_artist(self.ax.patch)
-                #self.ax.draw_artist(self.mylines[idx])
-            except:
-                pass
+            #dataの最終行の温度分布
+            self.dist = data[key[0]][key[1]].iloc[-1][1:]
+            #ラインを更新
+            self.mylines[idx].set_data(self.pos,list(self.dist))
 
         self._draw_update()
             

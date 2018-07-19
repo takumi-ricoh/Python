@@ -5,6 +5,7 @@ Created on Wed Jul 11 17:18:31 2018
 @author: p000495138
 """
 from PyQt5 import QtWidgets as Qtw
+from PyQt5.QtGui import QFont
 import pyqtgraph as pg
 
     
@@ -27,6 +28,9 @@ class GUI(Qtw.QMainWindow):
     #%% レイアウト初期化
     def _set_layout(self):
                
+        #フォント
+        font = QFont("Meiryo UI")
+        
         #題名
         self.setWindowTitle('おれおれグラフ生成アプリケーション')
         #メニュー画面
@@ -46,7 +50,9 @@ class GUI(Qtw.QMainWindow):
         
         #プロット流域の設定        
         #self.pltcanvas = self._set_plotArea()          
-        self.pltcanvas  = pg.GraphicsLayoutWidget()       
+        self.pltcanvas  = pg.GraphicsLayoutWidget()     
+        self.pltcanvas.setBackground((50,50,50))
+
 
         #レイアウトの設定        
         #self.vbox = self._set_layouts(self.hbox, self.pltcanvas)
@@ -58,6 +64,8 @@ class GUI(Qtw.QMainWindow):
         #self._set_window(self.vbox)
         widget = Qtw.QWidget()
         widget.setLayout(vbox)
+        #まとめてフォント変更
+        widget.setFont(font)
         self.setCentralWidget(widget)
         self.show()
 

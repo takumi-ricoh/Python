@@ -6,6 +6,7 @@ Created on Fri Sep  8 11:04:01 2017
 
 
 """
+from PyQt5.QtGui import QFont
 from pyqtgraph.Qt import QtCore, QtGui
 from . import plot_base_mdl as base_p
 #%%プロッタ
@@ -19,6 +20,8 @@ class Plotter():
         
         self.plots = {}
         self.InitPlot()
+        
+        
     
     #初期化
     def InitPlot(self):
@@ -29,15 +32,16 @@ class Plotter():
             #レイアウト
             row     = cfg['pos'][0]
             column  = cfg['pos'][1]            
-            layout = self.canvas.addPlot(row,column)
+            self.layout = self.canvas.addPlot(row,column)
             
-            print(key)
+            myfont = QFont("Meiryo UI")
+            self.layout.setFont(myfont)
 
             #プロットの種類を指定して、プロット生成
             if cfg['kind'] == 'timeseries':
-                plt = TimePlots(layout, cfg, self.pool)
+                plt = TimePlots(self.layout, cfg, self.pool)
             if cfg['kind'] == 'distribution':
-                plt = DistPlots(layout, cfg, self.pool)
+                plt = DistPlots(self.layout, cfg, self.pool)
 
             #登録
             self.plots[key] = plt
@@ -46,6 +50,9 @@ class Plotter():
     def start(self):
         self.timer=QtCore.QTimer()
         self.timer.timeout.connect(self.plots["PLOT1"].update)
+        self.timer.timeout.connect(self.plots["PLOT2"].update)
+        self.timer.timeout.connect(self.plots["PLOT3"].update)
+        self.timer.timeout.connect(self.plots["PLOT4"].update)
         self.timer.start(10)    #10msごとにupdateを呼び出し
 
     #ストップ
@@ -78,5 +85,13 @@ class DistPlots(base_p.Dist_Plot):
 
         super().__init__(plt, pool)
 
+        #初期設定
         self.plt.setTitle(cfg["title"])
-       
+        self.plt.setLabel("bottom",text="time")
+        self.plt.setLabel("left",text="temperature")        
+        self.plt.showGrid(x=True,y=True)
+        self.plt.setYRange(0,300) 
+        self.plt.addLegend() 
+
+        #グラフの初期化
+        self.init_line(cfg['keys'], cfg['pos'], cfg['legend'])       

@@ -58,7 +58,7 @@ class DataPool():
     def get_value(self):
         self.pool["sensor"]  = sensor.get_value()
         self.pool["machine"] = machine.get_value()
-        return pool
+        return self.pool
 
 #%% メイン処理
 if __name__ == '__main__':

@@ -19,12 +19,11 @@ PLOT1:
 PLOT2:
   title: サーモパイル温度分布
   kind: distribution
-  pos: [0,1]
+  pos: [0,1,2,3,4,5,6,7]
   keys: #2段階まで指定する
-    [[sensor, couple,     obj],
-     [sensor, thermopile, obj]]
+    [[sensor, thermopile, obj]]
   legend: 
-    [熱電対, 対象温度] 
+    [対象温度] 
   color:
     [1,2,3]
   
