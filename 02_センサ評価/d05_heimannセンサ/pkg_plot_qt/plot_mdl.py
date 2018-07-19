@@ -34,17 +34,15 @@ class Plotter():
             column  = cfg['pos'][1]            
             self.layout = self.canvas.addPlot(row,column)
             
-            myfont = QFont("Meiryo UI")
-            self.layout.setFont(myfont)
 
             #プロットの種類を指定して、プロット生成
             if cfg['kind'] == 'timeseries':
-                plt = TimePlots(self.layout, cfg, self.pool)
+                self.plt = TimePlots(self.layout, cfg, self.pool)
             if cfg['kind'] == 'distribution':
-                plt = DistPlots(self.layout, cfg, self.pool)
+                self.plt = DistPlots(self.layout, cfg, self.pool)
 
             #登録
-            self.plots[key] = plt
+            self.plots[key] = self.plt
             
     #スタート
     def start(self):
@@ -66,6 +64,7 @@ class TimePlots(base_p.Time_Plot):
         
         #共通部分
         super().__init__(plt, pool)
+
 
         #初期設定
         self.plt.setTitle(cfg["title"])

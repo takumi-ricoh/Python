@@ -53,7 +53,6 @@ class GUI(Qtw.QMainWindow):
         self.pltcanvas  = pg.GraphicsLayoutWidget()     
         self.pltcanvas.setBackground((50,50,50))
 
-
         #レイアウトの設定        
         #self.vbox = self._set_layouts(self.hbox, self.pltcanvas)
         vbox = Qtw.QVBoxLayout()
