@@ -8,7 +8,10 @@ from PyQt5 import QtWidgets as Qtw
 from PyQt5.QtGui import QFont
 import pyqtgraph as pg
 
-    
+def printa():
+    print("まだできません")    
+
+
 #%% GUI画面
 class GUI(Qtw.QMainWindow):
 
@@ -20,10 +23,9 @@ class GUI(Qtw.QMainWindow):
 
     #%% アクションのセッティング
     def set_action(self, adapter):
-        print(type(adapter))
-        dir(adapter)
-        self.startButton.clicked.connect(lambda: adapter.start())
-        self.stopButton.clicked.connect(lambda: adapter.stop())
+        self.adapter = adapter
+        self.startButton.clicked.connect(self.adapter.start)
+        self.stopButton.clicked.connect(self.adapter.stop)
 
     #%% レイアウト初期化
     def _set_layout(self):
@@ -33,10 +35,22 @@ class GUI(Qtw.QMainWindow):
         
         #題名
         self.setWindowTitle('おれおれグラフ生成アプリケーション')
+
+
         #メニュー画面
         #self._set_menu()
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('File')     
+        fileMenu = menubar.addMenu('&File')     
+        
+        self.saveAct = Qtw.QAction('&save',self)
+        self.saveAct.setStatusTip("SaveData")
+        self.saveAct.triggered.connect(self._showSaveDialog)
+        fileMenu.addAction(self.saveAct)
+
+        self.openAct = Qtw.QAction('&open',self)
+        self.openAct.setStatusTip("OpenData")
+        self.openAct.triggered.connect(self._showOpenDialog)
+        fileMenu.addAction(self.openAct)
 
         #ボタン
         #self.hbox = self._set_button()      
@@ -106,3 +120,21 @@ class GUI(Qtw.QMainWindow):
         self.setCentralWidget(widget)
         #self.setLayout(vbox)
         self.show()
+
+    #%% ダイアログ表示
+
+    def _showSaveDialog(self):
+
+        # 第二引数はダイアログのタイトル、第三引数は表示するパス
+        self.fname = Qtw.QFileDialog.getSaveFileName(self, 'Open file', '/home')
+        print(self.fname)
+        # fname[0]は選択したファイルのパス（ファイル名を含む）
+        self.adapter.save(self.fname[0])
+
+    def _showOpenDialog(self):
+
+        # 第二引数はダイアログのタイトル、第三引数は表示するパス
+        self.fname = Qtw.QFileDialog.getOpenFileName(self, 'Open file', '/home')
+        print(self.fname)
+        # fname[0]は選択したファイルのパス（ファイル名を含む）
+        self.adapter.fopen(self.fname[0])

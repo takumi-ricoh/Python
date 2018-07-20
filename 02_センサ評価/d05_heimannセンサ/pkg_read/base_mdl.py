@@ -11,17 +11,18 @@ from serial import Serial
 class SerialThread():
 
     def __init__(self, ser):
-        
+        #シリアルポート情報登録
+        self.ser = ser         
         #停止用の初期化
         self.stop_event = threading.Event() #停止させるかのフラグ
-        #停止時はシリアルポートを閉じる
-        self.ser = ser
         #保存用データの初期化
         self.return_value = []
-        #スレッドの生成
+        #スレッドインスタンスの生成
         self.thread = threading.Thread(target = self._worker,)
 
-    def start(self):
+    def start(self):       
+        #シリアルポート開通
+        self.ser.serial_open()
         #スレッドの作成と開始
         self.thread.start()
         print("thread started")
@@ -30,7 +31,7 @@ class SerialThread():
         """スレッドを停止させる"""
         self.stop_event.set()
         self.thread.join()    #スレッドが停止するのを待つ
-        self.ser.com.close()      #終わったら通信をきる
+        self.ser.serial_close()      #終わったら通信をきる
 
 #    def _worker(self):
 #        None
@@ -41,9 +42,21 @@ class SerialCom():
     def __init__(self,port,baudrate):
         self.port       = port
         self.baudrate   = baudrate
+        
+    def serial_open(self):    
         self._serial_init(self.port,self.baudrate)
     
+    def serial_close(self):    
+        self.com.close()
+
+    def serial_read(self, coding):
+        data = self.com.readline()
+        data = data.strip().decode(coding) #先頭/末を消す
+        return data
+
     def _serial_init(self,port,baudrate):
+        print(port)
+        print(baudrate)
         self.com = Serial(
         port=port,
         baudrate=baudrate,
@@ -55,8 +68,4 @@ class SerialCom():
         rtscts=0,
         writeTimeout=None,
         dsrdtr=None)         
-
-    def serial_read(self, coding):
-        data = self.com.readline()
-        data = data.strip().decode(coding) #先頭/末を消す
-        return data
+        print("connected")

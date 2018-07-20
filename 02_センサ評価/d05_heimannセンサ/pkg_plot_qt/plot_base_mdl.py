@@ -17,6 +17,7 @@ class Time_Plot():
         self.pool = pool
               
     def get_value(self):
+        #print('get_value call')
         value = self.pool.get_value()
         return value
     
@@ -26,25 +27,23 @@ class Time_Plot():
         self.keys  = keys
         self.mylines = []      
         for i,key in enumerate(self.keys):
-            self.mylines.append(self.plt.plot(name=legend[i],pen=(i,10)))
+            self.mylines.append(self.plt.plot(name=legend[i],pen=(i,28)))
 
     def update(self):
-        #print("start update")
         data = self.get_value()
         
-        #キーの数だけアップデート           
-        for idx,key in enumerate(self.keys):
-            
-            #ここはselfを付ける必要がある。
-            self.sec = data[key[0]][key[1]][key[2]]["sec"]
-            self.val = data[key[0]][key[1]][key[2]][key[3]]
+        if len(data["sensor"]["thermopile"]["obj"])>5:
+            #キーの数だけアップデート           
+            for idx,key in enumerate(self.keys):
+                
+                #ここはselfを付ける必要がある。
+                self.sec = data[key[0]][key[1]][key[2]]["sec"]
+                self.val = data[key[0]][key[1]][key[2]][key[3]]
 
-            #print(self.sec)
-            #ラインを更新
-            self.myline = self.mylines[idx]
-            self.myline.setData(self.sec, self.val)
-            
-            #print("lineupdate")
+                #ラインを更新
+                self.myline = self.mylines[idx]
+                self.myline.setData(list(self.sec), list(self.val))
+
                                 
 #%%時系列グラフの親クラス
 class Dist_Plot():
@@ -58,12 +57,12 @@ class Dist_Plot():
         value = self.pool.get_value()
         return value
 
-    def init_line(self, keys, pos, legend):
+    def init_line(self, keys, xx, legend):
         self.keys = keys
-        self.pos  = pos
+        self.xx  = xx
         self.mylines = []        
-        for i,key in enumerate(self.keys):
-            self.mylines.append(self.plt.plot(self.pos, np.zeros_like(self.pos),symbol="o",name=legend[i]))
+        for idx,key in enumerate(self.keys):
+            self.mylines.append(self.plt.plot(self.xx[idx], np.zeros_like(self.xx[idx]),symbol="o",symbolBrush=(idx,3),name=legend[idx]))
             
         #plt.show(block=False)
         
@@ -74,8 +73,9 @@ class Dist_Plot():
         for idx,key in enumerate(self.keys):
             #           #空データのば愛、エラーになるので、例外にしておく
             #dataの最終行の温度分布
+            self.x    = self.xx[idx]
             self.dist = data[key[0]][key[1]][key[2]].iloc[-1][1:]
             #ラインを更新
             self.myline = self.mylines[idx]
-            self.myline.setData(self.pos,list(self.dist))
+            self.myline.setData(self.x, list(self.dist))
 

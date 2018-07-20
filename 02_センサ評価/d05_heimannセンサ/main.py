@@ -16,7 +16,7 @@ from pkg_plot_qt import plot_mdl
 from pkg_config import get_cfg_mdl #グローバル変数
 from pkg_save import save_mdl
 import gui
-
+import pickle
 #%%キーボード待ち
 def getkey(key):
     return(bool(ctypes.windll.user32.GetAsyncKeyState(key)&0x8000))
@@ -25,10 +25,11 @@ ESC = 0x1B
 
 #%% 仲介クラス
 class GUI_Adapter():
-    def __init__(self, sensor, machine, plotter):
+    def __init__(self, sensor, machine, plotter, pool):
         self.sensor = sensor
         self.machine = machine
         self.plotter = plotter
+        self.pool = pool
 
     #スタート
     def start(self):
@@ -47,6 +48,17 @@ class GUI_Adapter():
         #プロット停止
         self.plotter.stop()
         print("stop success")
+
+    def save(self,savename):
+        data = pool.get_value()
+        with open(savename, mode='wb') as f:
+            pickle.dump(data, f)
+
+    def fopen(self,openname):
+        with open(openname, mode='rb') as f:
+            self.opendata = pickle.load(f)
+        pool.pool = self.opendata
+        plotter.one_shot()
 
 #%% データプールクラス
 class DataPool():
@@ -73,7 +85,7 @@ if __name__ == '__main__':
     t0 = time.time()
     #%% パラメータ取得
     gui_conf, plot_conf, sen_conf, log_conf = get_cfg_mdl.read_config()
-    
+ 
     #%% オブジェクト生成    
 
     #GUI
@@ -88,10 +100,13 @@ if __name__ == '__main__':
     #センサ、fuserのまぜこぜにも対応するため、poolという一つの辞書で管理する
     plotter = plot_mdl.Plotter(gui.pltcanvas, pool,  plot_conf)
 
+
+    #セーブモジュール
+    #saver = save_mdl.saver
+
     #GUIのアクションを設定
     #いろいろあるので、GUI_Adapterクラスにまとめる
-    adapter = GUI_Adapter(sensor, machine, plotter)
+    adapter = GUI_Adapter(sensor, machine, plotter, pool)
     print(type(adapter))
     gui.set_action(adapter)
-
     sys.exit(app.exec_())

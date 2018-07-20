@@ -6,8 +6,10 @@ Created on Fri Sep  8 11:04:01 2017
 
 """
 
-import csv
-import numpy as np
+import pickle
 
-class Saver():
-    pass
+def saver(name,data): 
+
+    with open(name, mode='wb') as f:
+         print("kita1")
+         pickle.dump(data, f)
