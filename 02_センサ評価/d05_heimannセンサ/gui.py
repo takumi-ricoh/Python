@@ -40,17 +40,29 @@ class GUI(Qtw.QMainWindow):
         #メニュー画面
         #self._set_menu()
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')     
+        fileMenu = menubar.addMenu('&ファイル')     
         
-        self.saveAct = Qtw.QAction('&save',self)
-        self.saveAct.setStatusTip("SaveData")
-        self.saveAct.triggered.connect(self._showSaveDialog)
-        fileMenu.addAction(self.saveAct)
+        #セーブ２
+        self.saveAct2 = Qtw.QAction('&保存(logデータ)',self)
+        self.saveAct2.triggered.connect(self._showSaveDialog2)
+        fileMenu.addAction(self.saveAct2)
 
-        self.openAct = Qtw.QAction('&open',self)
-        self.openAct.setStatusTip("OpenData")
+        #ファイルを開く
+        self.openAct = Qtw.QAction('&開く(未対応)',self)
         self.openAct.triggered.connect(self._showOpenDialog)
         fileMenu.addAction(self.openAct)
+
+        #セーブ１
+        self.saveAct = Qtw.QAction('&保存(未対応)',self)
+        #self.saveAct.triggered.connect(self._showSaveDialog)
+        fileMenu.addAction(self.saveAct)
+
+        #アプリを終了
+        self.endAct = Qtw.QAction('&終了',self)
+        self.endAct.triggered.connect(self._closeApp)
+        self.endAct.triggered.connect(self.close)
+        fileMenu.addAction(self.endAct)
+        
 
         #ボタン
         #self.hbox = self._set_button()      
@@ -131,6 +143,14 @@ class GUI(Qtw.QMainWindow):
         # fname[0]は選択したファイルのパス（ファイル名を含む）
         self.adapter.save(self.fname[0])
 
+    def _showSaveDialog2(self):
+
+        # 第二引数はダイアログのタイトル、第三引数は表示するパス
+        self.fname = Qtw.QFileDialog.getSaveFileName(self, 'Open file', '/home')
+        print(self.fname)
+        # fname[0]は選択したファイルのパス（ファイル名を含む）
+        self.adapter.save_raw(self.fname[0])
+
     def _showOpenDialog(self):
 
         # 第二引数はダイアログのタイトル、第三引数は表示するパス
@@ -138,3 +158,6 @@ class GUI(Qtw.QMainWindow):
         print(self.fname)
         # fname[0]は選択したファイルのパス（ファイル名を含む）
         self.adapter.fopen(self.fname[0])
+
+    def _closeApp(self):
+        self.adapter.stop()

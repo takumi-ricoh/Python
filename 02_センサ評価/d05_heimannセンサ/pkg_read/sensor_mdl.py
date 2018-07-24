@@ -62,22 +62,28 @@ class SensorLog(base_mdl.SerialThread):
             #カウンタ
             self.count  = next(it)
 
-            if len(self.data)>1:
-                #ある時刻でのデータ列取得(リスト)
-                time_now    = [time.time() - self.t0]
-                couples_now = time_now + [float(self.data[1]), float(self.data[2])] 
-                nums_now    = time_now + [float(i.split(":")[0]) for i in self.data[3:-1]]
-                objs_now    = time_now + [float(i.split(":")[1]) for i in self.data[3:-1]]
-                ambs_now    = time_now + [float(i.split(":")[2]) for i in self.data[3:-1]]
-        
-                #データフレームに追加
-                self.couple.loc[self.count] = couples_now
-                self.num.loc[self.count]    = nums_now
-                self.obj.loc[self.count]    = objs_now
-                self.amb.loc[self.count]    = ambs_now
+            if len(self.data)>1: #データが少なくとも取得されたあとから～
                 
-                #センサ数取得
-                self.sensor_number = len(objs_now)
+                #正常データかどうかの判定
+                num_check    = [float(i.split(":")[0]) for i in self.data[3:-1]]
+                
+                if num_check == [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]:
+
+                    #ある時刻でのデータ列取得(リスト)
+                    time_now    = [time.time() - self.t0]
+                    couples_now = time_now + [float(self.data[1]), float(self.data[2])] 
+                    nums_now    = time_now + [float(i.split(":")[0]) for i in self.data[3:-1]]
+                    objs_now    = time_now + [float(i.split(":")[1]) for i in self.data[3:-1]]
+                    ambs_now    = time_now + [float(i.split(":")[2]) for i in self.data[3:-1]]
+            
+                    #データフレームに追加
+                    self.couple.loc[self.count] = couples_now
+                    self.num.loc[self.count]    = nums_now
+                    self.obj.loc[self.count]    = objs_now
+                    self.amb.loc[self.count]    = ambs_now
+                    
+                    #センサ数取得
+                    self.sensor_number = len(objs_now)
 
             #ワーカー
             time.sleep(.05)

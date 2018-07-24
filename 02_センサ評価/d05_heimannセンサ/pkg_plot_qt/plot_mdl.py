@@ -53,7 +53,7 @@ class Plotter():
         self.timer.timeout.connect(self.plots["PLOT2"].update)
         self.timer.timeout.connect(self.plots["PLOT3"].update)
         self.timer.timeout.connect(self.plots["PLOT4"].update)
-        self.timer.start(1)    #10msごとにupdateを呼び出し
+        self.timer.start(200)    #10msごとにupdateを呼び出し
 
     #ストップ
     def stop(self):
@@ -88,7 +88,7 @@ class DistPlots(base_p.Dist_Plot):
 
         #初期設定
         self.plt.setTitle(cfg["title"])
-        self.plt.setLabel("bottom",text="time")
+        self.plt.setLabel("bottom",text="x[mm]")
         self.plt.setLabel("left",text="temperature")        
         self.plt.showGrid(x=True,y=True)
         self.plt.setYRange(0,300) 

@@ -41,6 +41,9 @@ class MachineLog(base_mdl.SerialThread):
         self.f26 = {"Heater1":f26_init, "Heater2":copy.copy(f26_init)}
 
 
+        #生データ
+        self.raw_data = []
+
     def get_value(self):        
         return {"f22":self.f22,"f26":self.f26}
     
@@ -59,6 +62,8 @@ class MachineLog(base_mdl.SerialThread):
                 #self.data = "@f22@|[Sensor1]|061:59.550 |Tar=,150,Cur=,120,Sen=,100,Air=,000,"
                 
                 self.data = self.ser.serial_read("utf-8")
+                
+                self.raw_data.append(self.data)
                 
                 #時刻
                 time_now    = [time.time() - self.t0]
@@ -88,4 +93,4 @@ class MachineLog(base_mdl.SerialThread):
             except:
                 pass
     
-            time.sleep(.05)
+            time.sleep(.01)

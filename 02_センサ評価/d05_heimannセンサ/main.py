@@ -54,6 +54,12 @@ class GUI_Adapter():
         with open(savename, mode='wb') as f:
             pickle.dump(data, f)
 
+    def save_raw(self,savename):
+        data = machine.raw_data
+        with open(savename, mode='w') as f:
+            for word in data:
+                f.writelines(word+"\n")
+
     def fopen(self,openname):
         with open(openname, mode='rb') as f:
             self.opendata = pickle.load(f)
