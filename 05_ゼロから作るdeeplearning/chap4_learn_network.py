@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import load_mnist
 import chap3_neuralnetwork as cp3
 
+from common import functions as cmfuncs
+from common import gradient as cmgrads
 
 #%%　誤差計算関数
 class CalcErr:
@@ -106,9 +108,11 @@ class Gradient_descent:
         grad = np.zeros_like(x)
         
         it = np.nditer(x,flags=["multi_index"],op_flags=["readwrite"])
+        count=0
         
         while not it.finished:
-    
+            count +=1
+            print(count)
             idx = it.multi_index                        
             tmp_val = x[idx]
             
@@ -136,7 +140,7 @@ class Gradient_descent:
             progress.append(x.copy())
         return x,progress
 
-#%%　
+#%%　1層
 class simpleNet:
     
     def __init__(self):
@@ -153,6 +157,70 @@ class simpleNet:
         loss = self.err_obj.cross_entropy_error2(y,t)
         
         return loss
+
+#%%　2層
+class TwoLayerNet:
+    def __init__(self, input_size, hidden_size, output_size, weight_init_std=0.01):
+        #重みの初期化
+        self.params = {}
+        self.params["W1"] = weight_init_std * np.random.randn(input_size, hidden_size)
+        self.params["b1"] = np.zeros(hidden_size)
+        self.params["W2"] = weight_init_std * np.random.randn(hidden_size, output_size)        
+        self.params["b2"] = np.zeros(output_size)
+        
+        #使う関数類
+        self.act = cp3.Activation()
+        self.out = cp3.Output()
+        self.err = CalcErr()
+        self.grad = Gradient_descent()
+
+    def predict(self,x):
+        W1, W2 = self.params["W1"], self.params["W2"]
+        b1, b2 = self.params["b1"], self.params["b2"]
+        
+        a1 = x@W1 + b1
+        #z1 = self.act.sigmoid(a1)
+        z1  = cmfuncs.sigmoid(a1)
+        a2 = z1@W2 + b2
+        #z2 = self.act.sigmoid(a2)
+        z2 = cmfuncs.sigmoid(a2)
+        #y  = self.out.softmax(z2)
+        y = cmfuncs.softmax(z2)
+        
+        return y
+    
+    #x:入力,t:正解ラベル
+    def loss(self,x,t):
+        y = self.predict(x)
+        
+        #return self.err.cross_entropy_error2(y,t)
+        return cmfuncs.cross_entropy_error(y,t)
+    
+    def accuracy(self,x,t):
+        y = self.predict(x)
+        y = np.argmax(y,axis=1)
+        t = np.argmax(t,axis=1)
+        
+        accuracy = np.sum(y==t) / float(x.shape[0])
+        return accuracy
+    
+    def numerical_gradient(self,x,t):
+        loss_W = lambda W: self.loss(x,t)
+        
+        grads={}
+        
+        #grads["W1"] = self.grad.numerical_gradient(loss_W, self.params["W1"])
+        #grads["b1"] = self.grad.numerical_gradient(loss_W, self.params["b1"])
+        #grads["W2"] = self.grad.numerical_gradient(loss_W, self.params["W2"])
+        #grads["b2"] = self.grad.numerical_gradient(loss_W, self.params["b2"])
+
+        grads["W1"] = cmgrads.numerical_gradient(loss_W, self.params["W1"])
+        grads["b1"] = cmgrads.grad.numerical_gradient(loss_W, self.params["b1"])
+        grads["W2"] = cmgrads.grad.numerical_gradient(loss_W, self.params["W2"])
+        grads["b2"] = cmgrads.grad.numerical_gradient(loss_W, self.params["b2"])
+
+
+        return grads
 
 #%%誤差計算
 print("------誤差計算練習------")
@@ -211,4 +279,22 @@ def f(W):
     return net.loss(x,t)
 dW = grad.numerical_gradient(f, net.W)
 print("勾配：",dW)
-      
+
+
+#%%TwoLayerNetの計算 
+print("\n\n------2層ネットワーク------")
+net = TwoLayerNet(input_size=784, hidden_size=100, output_size=10)
+
+print("\n ## パラメータサイズ ##")
+print("W1サイズ=",net.params["W1"].shape)
+print("b1サイズ=",net.params["b1"].shape)
+print("W2サイズ=",net.params["W2"].shape)
+print("b2サイズ=",net.params["b2"].shape)
+
+print("\n ## 推論処理(ダミーデータ) ##")
+x = np.random.rand(100,784)
+y = net.predict(x)
+
+print("\n ## 勾配計算(ダミーデータ) ##")
+t = np.random.rand(100,10)
+grads = net.numerical_gradient(x,t)
