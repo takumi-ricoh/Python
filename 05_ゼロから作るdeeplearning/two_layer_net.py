@@ -42,14 +42,14 @@ class TwoLayerNet:
         
     # x:入力データ, t:教師データ
     def numerical_gradient(self, x, t):
-        loss_W = lambda x: self.loss(x, t)
+        f_loss = lambda W: self.loss(x, t)
         #loss_W = lambda x: np.sum(x)+np.sum(t)#lambda W: self.loss(x, t)
         
         grads = {}
-        grads['W1'] = numerical_gradient(loss_W, self.params['W1'])
-        grads['b1'] = numerical_gradient(loss_W, self.params['b1'])
-        grads['W2'] = numerical_gradient(loss_W, self.params['W2'])
-        grads['b2'] = numerical_gradient(loss_W, self.params['b2'])
+        grads['W1'] = numerical_gradient(f_loss, self.params['W1'])
+        grads['b1'] = numerical_gradient(f_loss, self.params['b1'])
+        grads['W2'] = numerical_gradient(f_loss, self.params['W2'])
+        grads['b2'] = numerical_gradient(f_loss, self.params['b2'])
         
         return grads
         

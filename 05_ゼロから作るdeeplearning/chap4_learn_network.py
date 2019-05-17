@@ -52,15 +52,20 @@ class MNIST_net2(cp3.MNIST_net):
     def __init__(self):
         pass
     
-    def get_data(self):
+    def get_train_data(self):
         (self.x_train, self.t_train),(self.x_test, self.t_test) = load_mnist.load_mnist(normalize=False,one_hot_label = True)
         return self.x_train,self.t_train
 
+    def get_test_data(self):
+        (self.x_train, self.t_train),(self.x_test, self.t_test) = load_mnist.load_mnist(normalize=False,one_hot_label = True)
+        return self.x_test,self.t_test
+
 #%%勾配法
+        
 class Gradient_descent:
     def __init__(self):
         pass
-
+    
     #数値微分
     def numerical_diff(self,f,x):
         h = 1e-4 # 0.0001
@@ -102,32 +107,38 @@ class Gradient_descent:
         return grad
 
     #配列の勾配計算
-    def numerical_gradient(self,f,x):
-        #print("xのサイズ= ",x.shape)
-        h = 1e-4 #0.001
-        grad = np.zeros_like(x)
+    def numerical_gradient(self,f_loss, param):
         
-        it = np.nditer(x,flags=["multi_index"],op_flags=["readwrite"])
-        count=0
+        """
+        paramは参照であることに注意!!
+        """
+        
+        h = 1e-4 #0.001
+        grad = np.zeros_like(param)
+        
+        it = np.nditer(param ,flags=["multi_index"], op_flags=["readwrite"])
         
         while not it.finished:
-            count +=1
-            print(count)
+            
             idx = it.multi_index                        
-            tmp_val = x[idx]
+            print(idx)
+            tmp_val = param[idx]
             
-            x[idx] = float(tmp_val) + h
-            fxh1   = f(x)
+            #パラメータの要素を一つ動かす
+            param[idx] = float(tmp_val) + h
+            fxh1   = f_loss(param)
             
-            x[idx] = float(tmp_val) - h
-            fxh2   = f(x)            
+            #パラメータの要素を一つ動かす
+            param[idx] = float(tmp_val) - h
+            fxh2   = f_loss(param)            
             
             grad[idx] = (fxh1 - fxh2) / (2*h)
             
-            x[idx] = tmp_val
+            param[idx] = tmp_val
             it.iternext()
             
         return grad
+
 
     #勾配降下法
     def gradient_descent(self,f, init_x, lr=0.01, step_num=100):
@@ -205,22 +216,48 @@ class TwoLayerNet:
         return accuracy
     
     def numerical_gradient(self,x,t):
-        loss_W = lambda W: self.loss(x,t)
+        #入力は無視される。
+        f_loss = lambda dummy: self.loss(x,t)
         
         grads={}
         
-        #grads["W1"] = self.grad.numerical_gradient(loss_W, self.params["W1"])
-        #grads["b1"] = self.grad.numerical_gradient(loss_W, self.params["b1"])
-        #grads["W2"] = self.grad.numerical_gradient(loss_W, self.params["W2"])
-        #grads["b2"] = self.grad.numerical_gradient(loss_W, self.params["b2"])
-
-        grads["W1"] = cmgrads.numerical_gradient(loss_W, self.params["W1"])
-        grads["b1"] = cmgrads.grad.numerical_gradient(loss_W, self.params["b1"])
-        grads["W2"] = cmgrads.grad.numerical_gradient(loss_W, self.params["W2"])
-        grads["b2"] = cmgrads.grad.numerical_gradient(loss_W, self.params["b2"])
-
+        grads["W1"] = self.grad.numerical_gradient(f_loss, self.params["W1"])
+        grads["b1"] = self.grad.numerical_gradient(f_loss, self.params["b1"])
+        grads["W2"] = self.grad.numerical_gradient(f_loss, self.params["W2"])
+        grads["b2"] = self.grad.numerical_gradient(f_loss, self.params["b2"])
 
         return grads
+
+    def gradient(self, x, t):
+        
+        def sigmoid_grad(x):
+            return (1.0 - self.act.sigmoid(x)) * self.act.sigmoid(x)
+        
+        W1, W2 = self.params['W1'], self.params['W2']
+        b1, b2 = self.params['b1'], self.params['b2']
+        grads = {}
+        
+        batch_num = x.shape[0]
+        
+        # forward
+        a1 = np.dot(x, W1) + b1
+        z1 = self.act.sigmoid(a1)
+        a2 = np.dot(z1, W2) + b2
+        y = self.out.softmax2(a2)
+        
+        # backward
+        dy = (y - t) / batch_num
+        grads['W2'] = np.dot(z1.T, dy)
+        grads['b2'] = np.sum(dy, axis=0)
+        
+        dz1 = np.dot(dy, W2.T)
+        da1 = sigmoid_grad(a1) * dz1
+        grads['W1'] = np.dot(x.T, da1)
+        grads['b1'] = np.sum(da1, axis=0)
+
+        return grads
+
+
 
 #%%誤差計算
 print("------誤差計算練習------")
@@ -233,7 +270,7 @@ print("クロスエントロピー誤差：",res)
 
 #複数データ(バッチ処理)
 mnist2 = MNIST_net2()
-x_train, t_train = mnist2.get_data()
+x_train, t_train = mnist2.get_train_data()
 
 train_idx = np.random.choice(x_train.shape[0],10)
 t_batch   = t_train[train_idx,:]
@@ -257,7 +294,7 @@ print("勾配ベクトル:",vec)
 init_x = np.array([-3.0, 4.0])
 res,progress = g.gradient_descent(g.function_2, init_x, lr=1e-2, step_num=100)
 print("最も勾配が小さくなるのは," ,res)
-plt.plot(progress)
+#plt.plot(progress)
 
 #%%simpleNetの計算
 print("\n\n------1層ネットワーク------")
@@ -297,4 +334,58 @@ y = net.predict(x)
 
 print("\n ## 勾配計算(ダミーデータ) ##")
 t = np.random.rand(100,10)
-grads = net.numerical_gradient(x,t)
+#grads = net.numerical_gradient(x,t)
+
+#%%TwoLayerNetの計算（手書き文字認識）
+
+#記録用
+mnist2 = MNIST_net2()
+x_train, t_train = mnist2.get_train_data()
+x_test,  t_test  = mnist2.get_test_data()
+
+#記録用
+train_loss_list = []
+train_acc_list = []
+test_acc_list = []
+
+#ハイパーパラメータ
+iters_num = 10000
+train_size = x_train.shape[0]
+batch_size = 100
+learning_rate = 0.1
+
+#1エポックあたりの繰り返し数
+iter_per_epoch = max(train_size/batch_size,1)
+
+#学習
+net2 = TwoLayerNet(input_size=784, hidden_size=100, output_size=10)
+for i in range(iters_num):
+    
+    print(i)
+    
+    #ミニバッチ取得
+    batch_mask = np.random.choice(train_size, batch_size)
+    x_batch    = x_train[batch_mask]
+    t_batch    = t_train[batch_mask]
+    
+    ##勾配計算
+    #grad = net2.numerical_gradient(x_batch,t_batch)
+    grad = net2.gradient(x_batch,t_batch)
+    
+    #パラメータ更新
+    for key in ("W1","b1","W2","b2"):
+        net2.params[key] = net2.params[key] - learning_rate * grad[key]
+        
+    #経過記録
+    loss = net2.loss(x_batch,t_batch)
+    train_loss_list.append(loss)
+    
+    #1エポックごとに認識精度を計算
+    if i % iter_per_epoch == 0:
+        train_acc = net2.accuracy(x_train,t_train)
+        test_acc  = net2.accuracy(x_test,t_test)
+        train_acc_list.append(train_acc)
+        test_acc_list.append(test_acc)
+        print("train acc, test acc | " + str(train_acc) + "," + str(test_acc))
+
+plt.plot(train_loss_list)
