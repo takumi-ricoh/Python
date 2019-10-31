@@ -7,6 +7,7 @@ Created on Mon May 13 17:27:44 2019
 
 import numpy as np
 from mnist import load_mnist
+import matplotlib.pyplot as plt
 
 #%%アクティベーション関数
 
@@ -86,7 +87,7 @@ class Relu:
     def __init__(self):
         self.mask = None
     
-    def forward(self,x,y):
+    def forward(self,x):
         self.mask = (x<=0)
         out = x.copy()
         out[self.mask] = 0
@@ -102,7 +103,7 @@ class Sigmoid:
     def __init__(self):
         self.out = None
     
-    def forward(self,x,y):
+    def forward(self,x):
         out = 1 / (1 + np.exp(-x))
         self.out = out
         return out
@@ -123,6 +124,7 @@ class Affine:
     def forward(self,x):
         self.x = x
         out = x @ self.W + self.b
+        return out
     
     def backward(self,dout):
         dx = dout @ self.W.T
@@ -178,12 +180,12 @@ class TwoLayerNet:
     #x:入力,t:正解ラベル
     def loss(self,x,t):
         y = self.predict(x)
-        return cross_entropy_error(y,t)
+        return self.lastLayer.forward(y,t)
     
     def accuracy(self,x,t):
         y = self.predict(x)
         y = np.argmax(y,axis=1)        
-        if t.nedim != 1:            
+        if t.ndim != 1:            
             t = np.argmax(t,axis=1)        
         accuracy = np.sum(y==t) / float(x.shape[0])
         return accuracy
@@ -303,7 +305,7 @@ dapple_price, dtax = mul_tax_layer.backward(dprice)
 dapple,dapple_num  = mul_apple_layer.backward(dapple_price)
 print(dapple,dapple_num,dtax)
 
-#%%実行
+#%%学習実行
 
 #データ読み込み
 (x_train, t_train),(x_test, t_test) = load_mnist.load_mnist(normalize=True, one_hot_label=True)
@@ -316,3 +318,63 @@ iters_num=10000
 train_size = x_train.shape[0]
 batch_size=100
 learning_rate=0.1
+
+#記録用
+train_loss_list = []
+train_acc_list = []
+test_acc_list = []
+
+
+#1エポックあたりの繰り返し数
+iter_per_epoch = max(train_size/batch_size,1)
+
+#インスタンス
+fig,ax = plt.subplots()
+lines1, = ax.plot(np.array([1]),[1],".-")
+lines2, = ax.plot(np.array([1]),[1],".-")
+ax.set_ylim(0,1)
+
+for i in range(iters_num):
+    
+    #print(i)
+    
+    #ミニバッチ取得
+    batch_mask = np.random.choice(train_size, batch_size)
+    x_batch    = x_train[batch_mask]
+    t_batch    = t_train[batch_mask]
+    
+    ##勾配計算
+    grad = network.gradient(x_batch,t_batch)
+    
+    #パラメータ更新
+    for key in ("W1","b1","W2","b2"):
+        network.params[key] -= learning_rate * grad[key]
+        
+    #経過記録
+    loss = network.loss(x_batch,t_batch)
+    train_loss_list.append(loss)
+    
+    #1エポックごとに認識精度を計算
+    if i % iter_per_epoch == 0:
+        train_acc = network.accuracy(x_train,t_train)
+        test_acc  = network.accuracy(x_test,t_test)
+        train_acc_list.append(train_acc)
+        test_acc_list.append(test_acc)
+        print("train acc, test acc | " + str(train_acc) + "," + str(test_acc))
+
+        #プロット更新
+        data1 = train_acc_list
+        data2 = test_acc_list
+        x1=np.linspace(0,len(data1)-1,len(data1))
+        x2=np.linspace(0,len(data2)-1,len(data2))
+        lines1.set_data(x1,data1)
+        lines2.set_data(x2,data2)
+        ax.set_xlim((x1.min(), x1.max()))
+        plt.grid(True)
+        plt.pause(0.01)
+        
+    #プロット更新
+#    x=np.linspace(0,len(train_loss_list)-1,len(train_loss_list))
+#    lines.set_data(x,train_loss_list)
+#    ax.set_xlim((x.min(), x.max()))
+#    plt.pause(0.01)

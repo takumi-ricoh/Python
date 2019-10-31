@@ -1,0 +1,1 @@
+tensorboard --logdir=Z:\waida\07_github\02_Python\06_tensorflow_tutorial
