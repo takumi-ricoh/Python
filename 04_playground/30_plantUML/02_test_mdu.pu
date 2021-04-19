@@ -1,0 +1,24 @@
+@startuml
+
+package algo_manager {
+    
+   class AlgorithmManager {
+       + void start() 
+       + void get_results()
+       + void save_instance()
+   }
+
+   class ProcessingStepInfoFormatter {
+       + class get_data()
+   }
+
+   AlgorithmManager <|--  ProcessingStepInfoFormatter
+
+   class スキ
+   ユーザー "1" -- "*" スキ
+   スキ "*" -- "1" 記事
+}
+
+@enduml
+
+

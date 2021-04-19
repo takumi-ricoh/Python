@@ -1,0 +1,11 @@
+{
+    "python.pythonPath": "C:\\Users\\p000495138\\Desktop\\Python39Env\\general\\Scripts\\python.exe",
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "test",
+            "database": "${workspaceFolder:02_youtube_sqlalchemy}/data.db"
+        }
+    ]
+}
