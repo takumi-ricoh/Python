@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hellow Worldを表示するプログラム</title>
+    </head>
+    <body>
+        <!-- 01. 基本 -->
+        <div id="fruits-list">
+            <h3>------ コンポーネントの基本 -------</h3>
+            <!-- <fruits-list-child></fruits-list-child> -->
+            <fruits-list-parent></fruits-list-parent>
+        </div>
+
+
+        <!-- 02. fruitlist -->
+        <div id="fruits-component">
+            <h3>------ コンポーネントの基本2 -------</h3>
+            <fruits-list v-for="fruit in fruitsItems" :fruits-item="fruit"></fruits-list>
+        </div>
+
+
+
+        
+
+        <!-- vueを使った表示 -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="02_component.js"></script>
+
+    </body>
+</html>

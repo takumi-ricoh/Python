@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hellow Worldを表示するプログラム</title>
+    </head>
+    <body>
+        <!-- 01. instance" -->
+        <div id="example1">
+            <h3>------ インスタンスの扱い -------</h3>
+            <li v-for="(item,index) in items">
+                <p>{{item.name}}は{{item.price}}円</p>
+                <p>{{items[index].name}}の税込み価格は{{priceWithTax[index]}}円</p>
+            </li>
+        </div>
+
+        <!-- 02. 条件付きレンダリング" -->
+        <div id="example2" v-bind:style="{'border': (isValid?'': '1px solid red')}">
+            <h3>------ 条件付きレンダリング -------</h3>
+            <p>名前:{{name}}</p>
+            <p v-show="!isValid">
+                コンソールからvm2.nameに名前を入力してください<br>
+                5文字より短いと、isValid==False です<br>
+                v-showなので,Trueになるとこの画面は消えます
+            </p>
+        </div>
+
+        <!-- 03. メソッドとイベントハンドリング" -->
+        <div id="example3">
+            <h3>------ メソッドとイベントハンドリング -------</h3>
+            <p>
+                <p>エンターで出力(v-on:change)：{{name1}}</p>
+                <input type="text" v-on:change="name1 = $event.target.value">
+                
+                <p>エンターで出力します2(v-on:change)：{{name2}}</p>
+                <input type="text" v-on:change="updateName($event)">
+
+                <p>リアルタイムに出力します(v-on:input)：{{name3}}</p>
+                <input type="text" v-on:input="name2 = $event.target.value">
+                
+                <p>クリックで出力します：{{name4}}</p>
+                <input type="text" v-on:input="temp = $event.target.value">
+                <button v-on:click="showData">表示</button>
+                </p>
+            </p>
+        </div>
+
+        <!-- 04.フォーム入力 -->
+        <div id="example4">
+            <h3>------ v-modelの利用 -------</h3>
+            <p>リアルタイムに出力します：(v-model){{name}}</p>
+            <input v-model="name">
+        </div>
+
+
+        <!-- vueを使った表示 -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="01_instance_and_databinding.js"></script>
+
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

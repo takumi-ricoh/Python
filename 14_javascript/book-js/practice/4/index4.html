@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>テンプレート</title>
+    <link href="../../_common/images/favicon.ico" rel="shortcut icon">
+    <link href="https://fonts.googleapis.com/css?family=M+PLUS+1p:400,500" rel="stylesheet">
+    <link href="../../_common/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <header>
+        <div class="container">
+            <h1>タイトル</h1>
+            <h2>サブタイトル</h2>
+        </div><!-- /.container -->
+    </header>
+    
+    <main>
+        <div class="container">
+            <section>
+
+                <!-- 1. script_01 -->
+                <h4>検索ボタン</h4>
+                <!-- 入力して送信ボタンを押すと, #に結果が送られる -->
+                <form action="#" id="form">
+                    <!-- 入力欄 -->
+                    <input type="text" name="word">
+                    <!-- 検索ボタン -->
+                    <input type="submit" value="検索">
+                </form>
+                <p id="output"></p>
+
+
+                <!-- 2.script_02 -->
+                <h4>時刻表示</h4>
+                <p>ふつうの表示：<span id="time_def"></span></p>
+                <p>みやすくしたもの: <span id="time"></span></p>
+                <p>AMPMにしたもの: <span id="time_ampm"></span></p>
+
+                <!-- 3.script_03 -->
+                <h4>円周率表示</h4>
+                <p>円周率は：<span id="pi"></span>です</p>
+                <p>ふつうに切り捨てると：<span id="pi_int"></span>です</p>
+                <p>少数第2位で切り捨てると：<span id="pi_two"></span>です</p>
+
+            </section>
+        </div><!-- /.container -->
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>JavaScript Samples</p>
+        </div><!-- /.container -->
+    </footer>
+
+    <!-- 1. script_01 -->
+     <script src="script_01.js"></script>
+
+    <!-- 2. script_02 -->
+    <script src="script_02.js"></script>
+
+    <!-- 3. script_03 -->
+    <script src="script_03.js"></script>
+
+
+
+</body>
+
+</html>
