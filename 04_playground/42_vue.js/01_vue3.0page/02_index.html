@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ディレクティブの作り方</title>
+    </head>
+    <body>
+        <!-- 1. v-bind -->
+        <p>---- v-bind ----</p>
+        <div id="app-1">
+            <a v-bind:href="url">Google</a>
+        </div>
+
+        <!-- 2. v-model -->
+        <p>---- v-model ----</p>
+        <div id="app-2">
+            <p>{{ inputText }}</p>
+            <input v-model='inputText'>
+        </div>
+
+        <!-- 3. v-on click -->
+        <p>---- v-on ----</p>
+        <div id="app-3"> 
+            <p>{{ count }}回クリックされました!</p>
+            <button v-on:click="counter">押してね</button>
+            <button v-on:click="counter2">初期化</button>
+        </div>
+
+        <!-- 4. v-if -->
+        <p>---- v-if ----</p>
+        <div id="app-4">
+            <h2>会員ランク</h2>
+            <p v-if="isMember && isPremier">プレミアム会員です</p>
+            <p v-else-if="isMember && !isPremier">一般会員です</p>
+            <p v-else-if="!isPremier">一般会員ではありません</p>
+            <p v-else>不正なユーザです</p>
+        </div>
+
+        <!-- 5. v-show -->
+        <p>---- v-show ----</p>
+        <div id="app-5">
+            <p v-show="isVisible">見えていますか?</p>            
+        </div>
+
+
+        <!-- 6. v-for -->
+        <p>---- v-for ----</p>
+        <div id="app-6">
+            <h2>食べたいものリスト</h2>
+            <ul>
+                <li v-for="food in foods" :key="food.id">
+                    {{ food.name}}
+                </li>
+            </ul>
+        </div>
+
+
+        <!-- 7. v-once -->
+        <p>---- v-once ----</p>
+        <div id="app-7">
+            <p v-once>{{ count }}回クリックされました</p>
+            <button v-on:click="counter">押してね</button>
+        </div>
+
+
+        <!-- vue昨日のCDN -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+        <!-- js source -->
+        <script src="02_directive.js"></script>
+
+
+    </body>
+
+
+</html>
