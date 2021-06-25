@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>テンプレート</title>
+    <link href="../../_common/images/favicon.ico" rel="shortcut icon">
+    <link href="https://fonts.googleapis.com/css?family=M+PLUS+1p:400,500" rel="stylesheet">
+    <link href="../../_common/css/style.css" rel="stylesheet">
+    <style>
+        .slide{
+            margin: 0 auto;
+            border: 1px solid black;
+            width: 720px;
+            background-color: black;
+        }
+        img {
+            max-width: 100%;
+        }
+        .toolbar{
+            overflow: hidden;
+            text-align: center;
+        }
+        .nav{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px 0;
+        }
+        #prev{
+            margin-right: 0.5rem;
+            width: 16px;
+            height: 16px;
+            background: url(images/arrow-left.svg) no-repeat;
+        }
+        #next{
+            margin-left: 0.5rem;
+            width: 16px;
+            height: 16px;
+            background: url(images/arrow-right.svg) no-repeat;
+        }
+        #page{
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>タイトル</h1>
+            <h2>サブタイトル</h2>
+        </div><!-- /.container -->
+    </header>
+    
+    <main>
+        <div class="container">
+            <section>
+                <div class="slide">
+                    <!-- 画像貼り付け -->
+                    <div class="image_box">
+                        <img id="main_image" src="images/image1.jpg">
+                    </div>
+                    <!-- なんかの領域 -->
+                    <div class="toolbar">
+                        <div class="nav">
+                            <div id="prev"></div>
+                            <div id="page"></div>
+                            <div id="next"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </div><!-- /.container -->
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>JavaScript Samples</p>
+        </div><!-- /.container -->
+    </footer>
+
+        <script src="script_05.js"></script>
+
+
+</body>
+
+</html>
