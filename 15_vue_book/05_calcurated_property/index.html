@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>サンプル5</title>
+        <!-- <link rel="stylesheet" href="main.css"> -->
+    </head>
+    <body>
+        <header></header>
+        <main>
+            <div id='app'>
+                調べたい年：<input type="text" v-model="year"><br>
+                {{year}}年は{{isUrudoshi ? 'うるう年です' : 'うるう年ではありません'}}
+            </div>
+        </main>
+        <footer></footer>
+
+        <script src="https://jp.vuejs.org/js/vue.js"></script>
+        <script src="script05.js"></script>
+    </body>
+</html>

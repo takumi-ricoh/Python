@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>サンプル6</title>
+        <!-- <link rel="stylesheet" href="main.css"> -->
+    </head>
+    <body>
+        <header></header>
+        <main>
+            <div id='app'>
+                <template v-if="stock >= 1">
+                    <span class="num">残り{{stock}}個</span>
+                    <button class="btn" v-on:click="onDeleteItem">削除</button>
+                    <button class="btn" v-on:click="onAddItem">追加</button>
+                </template>
+                <template v-else=>
+                    在庫切れ
+                </template>
+            </div>
+        </main>
+        <footer></footer>
+
+        <script src="https://jp.vuejs.org/js/vue.js"></script>
+        <script src="script06.js"></script>
+    </body>
+</html>
