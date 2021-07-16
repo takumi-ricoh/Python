@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>サンプル8</title>
+        <!-- <link rel="stylesheet" href="main.css"> -->
+    </head>
+    <body>
+        <header></header>
+        <main>
+            <div id='app'>
+                <div v-if="stock >= 1">
+                    <p class="word">残り{{stock}}個</p>
+                    <button class="mybtn" v-on:click="onDeleteItem">削除</button>
+                </div>
+
+                <!-- ウォッチャを使うパターン -->
+                <p>ウォッチャ：{{message}}</p> 
+
+                <!-- 算出プロパティを使うパターン -->
+                <p>算出プロパティ：{{statusmessage}}</p> 
+            </div>
+
+        </main>
+        <footer></footer>
+
+        <script src="https://jp.vuejs.org/js/vue.js"></script>
+        <script src="script08.js"></script>
+    </body>
+</html>

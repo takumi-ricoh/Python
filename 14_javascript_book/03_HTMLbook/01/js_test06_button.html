@@ -1,0 +1,25 @@
+<!-- https://www.atmarkit.co.jp/ait/articles/0911/18/news110_2.html  -->
+<!DOCTYPE html>
+<html>
+<body>
+    <!--on***がjavascript-->
+
+    <input type="button" value="クリック" onclick="alert('ボタンがクリックされた')">
+
+    <input type="button" value="ボタン" 
+        onmouseover="this.value='マウスオーバー'" onmouseout="this.value='マウスアウト'">
+
+    <input type="button" value="ボタン"
+        onmousedown="this.value='マウスダウン'" onmouseup="this.value='マウスアップ'">   
+    
+    <input type="button" value="ボタン"
+        onclick="this.value='クリック'" ondblclick="this.value='ダブルクリック'">
+
+    <body oncontextmenu="alert('右クリック禁止！'); return false">
+        　　このページは右クリック禁止です。<br>
+
+    <body onload="alert('いらっしゃいませ。')" onunload="alert('またどうぞ。')">
+        　　ようこそJavaScriptの世界へ<br>
+</body>
+</html>
+
